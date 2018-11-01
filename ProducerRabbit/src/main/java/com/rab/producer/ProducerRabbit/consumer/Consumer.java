@@ -16,7 +16,7 @@ import com.rabbitmq.client.Envelope;
 public class Consumer {
 	
 	String queueName;
-
+	static String messaege = "";
 	
 	public Consumer() {
 		
@@ -29,7 +29,7 @@ public class Consumer {
 	}
 
 	
-	public void declareQueue(String queueName,String exchangeName) {
+	public void declareQueue(String queueName,String exchangeName,String rountingKey) {
 		ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection;
@@ -39,8 +39,9 @@ public class Consumer {
 		
         Channel channel = connection.createChannel();
         this.queueName=queueName;
+        channel.exchangeDeclare(exchangeName, "direct",true);
         channel.queueDeclare(queueName, true, false, false, null);
-        channel.queueBind(queueName, exchangeName, "jsa.rountingkey");
+        channel.queueBind(queueName, exchangeName, rountingKey);
         channel.close();
         connection.close();
         
@@ -72,12 +73,13 @@ public class Consumer {
             public void handleDelivery(String consumerTag, Envelope envelope,
                                        AMQP.BasicProperties properties, byte[] body) throws IOException {
               String message = new String(body, "UTF-8");
+              Consumer.messaege = " [x] Received '" + message + "'";
               System.out.println(" [x] Received '" + message + "'");
             }
           };
           
-        String mesaj = channel.basicConsume(queueName, true, consumer);
-        
+        channel.basicConsume(queueName, true, consumer);
+        String mesaj = Consumer.messaege;
         channel.close();
         connection.close();
         

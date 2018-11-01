@@ -8,7 +8,7 @@
 </head>
 <body>
 	<h1>sent ${name}</h1>
-	<form method = "POST" action = "/ProducerRabbit-0.0.1-SNAPSHOT/consume">
+	<form method = "POST" action = "/ProducerRabbit/consume">
 	    <input type = "submit" value = "Submit-Consume"/>
     </form>
 </body>

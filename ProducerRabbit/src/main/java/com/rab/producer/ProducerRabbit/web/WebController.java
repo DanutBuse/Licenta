@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.rab.producer.ProducerRabbit.consumer.Consumer;
+import com.rab.producer.ProducerRabbit.entity.User;
 import com.rab.producer.ProducerRabbit.producer.Producer;
 
 
@@ -20,10 +21,12 @@ public class WebController {
 	Producer producer;
 	@Autowired
 	Consumer consumer;
+	@Autowired
+	User user;
 	
 	@RequestMapping(value = "/send", method = RequestMethod.POST)
 	public ModelAndView sendMsg(@ModelAttribute("name") String name){
-		producer.produceMsg(name,"jsa.direct2","queue2");
+		producer.produceMsg(name,user.getExchange(),user.getRoutingKey());
 		ModelAndView mv = new ModelAndView("sent");
 		return mv;
 	}
@@ -34,7 +37,13 @@ public class WebController {
 		
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("index");
-		consumer.declareQueue("queue2", "jsa.direct2");
+		
+		user.setQueue("queue2");
+		user.setRoutingKey("jsa.rountingkey");
+		user.setExchange("jsa.direct2");
+		
+		consumer.declareQueue(user.getQueue(), user.getExchange(),user.getRoutingKey());
+		
 		return mv;
 	}
 	
