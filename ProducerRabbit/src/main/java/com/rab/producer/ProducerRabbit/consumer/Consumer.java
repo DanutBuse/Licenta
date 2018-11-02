@@ -39,9 +39,11 @@ public class Consumer {
 		
         Channel channel = connection.createChannel();
         this.queueName=queueName;
+        
         channel.exchangeDeclare(exchangeName, "direct",true);
         channel.queueDeclare(queueName, true, false, false, null);
         channel.queueBind(queueName, exchangeName, rountingKey);
+        
         channel.close();
         connection.close();
         

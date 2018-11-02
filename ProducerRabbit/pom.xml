@@ -18,9 +18,6 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	
-      
-
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,8 +25,9 @@
 		<java.version>1.8</java.version>
 		<start-class>com.rab.producer.ProducerRabbit.ProducerRabbitApplication</start-class>
 	</properties>
-
+	
 	<dependencies>
+	
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
@@ -47,6 +45,7 @@
     <groupId>org.apache.tomcat.embed</groupId>
     <artifactId>tomcat-embed-jasper</artifactId>
     <version>9.0.12</version>
+    <scope>provided</scope>
 </dependency>
 
 <dependency>
