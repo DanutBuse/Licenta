@@ -31,6 +31,10 @@ public class WebController {
 		return mv;
 	}
 	
+	@RequestMapping(value = "/")
+	public String init() {
+		return "redirect:produce";
+	}
 	
 	@RequestMapping("/produce")
 	public ModelAndView produce(){
@@ -48,10 +52,10 @@ public class WebController {
 	}
 	
 	@RequestMapping(value = "/consume" , method = RequestMethod.POST)
-	@ResponseBody
-	public String consumeMsg() {
-		
-		return consumer.recievedMessage();
+	public ModelAndView consumeMsg() {
+		ModelAndView mv = new ModelAndView("consumed");
+		mv.addObject("message", consumer.recievedMessage());
+		return mv;
 		
 	}
 }

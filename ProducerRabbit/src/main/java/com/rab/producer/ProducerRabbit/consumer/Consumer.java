@@ -73,15 +73,15 @@ public class Consumer {
             public void handleDelivery(String consumerTag, Envelope envelope,
                                        AMQP.BasicProperties properties, byte[] body) throws IOException {
               String message = new String(body, "UTF-8");
-              Consumer.messaege = " [x] Received '" + message + "'";
+              Consumer.messaege = message;
               System.out.println(" [x] Received '" + message + "'");
             }
           };
           
         channel.basicConsume(queueName, true, consumer);
-        String mesaj = Consumer.messaege;
         channel.close();
         connection.close();
+        String mesaj = Consumer.messaege;
         
         return mesaj;
 		} catch (IOException e) {
