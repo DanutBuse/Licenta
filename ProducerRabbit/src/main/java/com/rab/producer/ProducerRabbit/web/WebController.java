@@ -5,12 +5,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.rab.producer.ProducerRabbit.consumer.Consumer;
-import com.rab.producer.ProducerRabbit.entity.User;
 import com.rab.producer.ProducerRabbit.producer.Producer;
+import com.rab.producer.ProducerRabbit.service.DbService;
 
 
 
@@ -22,7 +22,7 @@ public class WebController {
 	@Autowired
 	Consumer consumer;
 	@Autowired
-	User user;
+	DbService dbService;
 	
 	@RequestMapping(value = "/send", method = RequestMethod.POST)
 	public ModelAndView sendMsg(@ModelAttribute("name") String name){
@@ -34,6 +34,20 @@ public class WebController {
 	@RequestMapping(value = "/")
 	public String init() {
 		return "redirect:produce";
+	}
+	@RequestMapping(value = "/add/user",method = RequestMethod.GET)
+	public ModelAndView addUser() {
+		ModelAndView mv = new ModelAndView("addUser");
+		return mv;
+	}
+	
+	@RequestMapping(value = "/add/user",method = RequestMethod.POST)
+	public ModelAndView addUserPost(@RequestParam("Username") String userName,
+									@RequestParam("Password") String pass,
+									@RequestParam("Type") String Type) {
+		ModelAndView mv = new ModelAndView("addUser");
+		
+		return mv;
 	}
 	
 	@RequestMapping("/produce")
