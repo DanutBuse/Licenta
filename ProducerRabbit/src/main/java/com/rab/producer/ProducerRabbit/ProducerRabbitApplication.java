@@ -15,7 +15,7 @@ public class ProducerRabbitApplication extends SpringBootServletInitializer{
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(ProducerRabbitApplication.class);
 	}
-	public static void main(String[] args) {
-		SpringApplication.run(ProducerRabbitApplication.class, args);
-	}
+//	public static void main(String[] args) {
+//		SpringApplication.run(ProducerRabbitApplication.class, args);
+//	}
 }
