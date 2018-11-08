@@ -1,7 +1,10 @@
 package com.rab.producer.ProducerRabbit.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -13,8 +16,9 @@ public class User {
 	
 	@Id
 	@Column(name="Id")
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Integer id;
-	
+
 	@Column(name="username")
 	String username;
 	@Column(name="password")
@@ -22,16 +26,26 @@ public class User {
 	@Column(name="tip")
 	String tipUtilizator;
 	
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="exchange")
 	ExchangeEntity exchange;
 	
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="queue")
 	QueueEntity queue;
 
+	
 	public User() {
 		
+	}
+	public User(String username, String password, String tipUtilizator, ExchangeEntity exchange,
+			QueueEntity queue) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.tipUtilizator = tipUtilizator;
+		this.exchange = exchange;
+		this.queue = queue;
 	}
 	public Integer getId() {
 		return id;
@@ -71,6 +85,7 @@ public class User {
 
 	public void setExchange(ExchangeEntity exchange) {
 		this.exchange = exchange;
+		this.exchange.setSender(this);
 	}
 
 	public QueueEntity getQueue() {
@@ -79,6 +94,7 @@ public class User {
 
 	public void setQueue(QueueEntity queue) {
 		this.queue = queue;
+		this.queue.setReceiver(this);
 	}
 	
 	
