@@ -1,5 +1,8 @@
 package com.rab.producer.ProducerRabbit.web;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -9,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.rab.producer.ProducerRabbit.consumer.Consumer;
-import com.rab.producer.ProducerRabbit.entity.ExchangeEntity;
-import com.rab.producer.ProducerRabbit.entity.QueueEntity;
 import com.rab.producer.ProducerRabbit.entity.User;
 import com.rab.producer.ProducerRabbit.producer.Producer;
 import com.rab.producer.ProducerRabbit.service.DbService;
@@ -27,6 +28,7 @@ public class WebController {
 	@Autowired
 	DbService dbService;
 	
+	
 	@RequestMapping(value = "/send", method = RequestMethod.POST)
 	public ModelAndView sendMsg(@ModelAttribute("name") String name){
 		producer.produceMsg(name,dbService.getUserById(1).getExchange().getExchangeName(),dbService.getUserById(1).getExchange().getRoutingKey());
@@ -35,35 +37,47 @@ public class WebController {
 	}
 	
 	@RequestMapping(value = "/")
-	public String init() {
-		return "redirect:add/user";
+	public ModelAndView init() {
+		//return "redirect:add/user";
+		return new ModelAndView("registerUser");
 	}
-	@RequestMapping(value = "/add/user",method = RequestMethod.GET)
-	public ModelAndView addUser() {
-		ModelAndView mv = new ModelAndView("addUser");
-		return mv;
-	}
-	
-	@RequestMapping(value = "/add/user",method = RequestMethod.POST)
+	@RequestMapping(value = "/login",method = RequestMethod.POST)
 	public ModelAndView addUserPost(@RequestParam("username") String userName,
 									@RequestParam("pass") String pass,
-									@RequestParam("tip") String type)	{
+									HttpServletResponse response)	{
 		
-		ModelAndView mv = new ModelAndView("addUser");
+		//view menu
+		ModelAndView mv = new ModelAndView("sent");
 		
-		ExchangeEntity exchangeEntity = new ExchangeEntity("jsa.direct2","jsa.rountingkey");
-		QueueEntity queueEntity = new QueueEntity("queue2");
-		User user = new User(userName,pass,type,exchangeEntity,queueEntity);
-		dbService.insertUser(user);
+		User user = dbService.getUserByName(userName);
+		if(dbService.check(user,pass)) {
+			response.addCookie(new Cookie("loggedIn","1"));
+		}
+		else
+			{
+				response.addCookie(new Cookie("loggedIn","0"));
+				return new ModelAndView("login");
+			}
+		dbService.setUserQueueExchange(user);
 		
 		consumer.declareQueue(user.getQueue().getQueueName(), 
 							  user.getExchange().getExchangeName(),
 							  user.getExchange().getRoutingKey());
 		
 		return mv;
-		
 	}
-	
+	@RequestMapping(value = "/login",method = RequestMethod.GET)
+	public ModelAndView registerUserPost(@RequestParam("username") String userName,
+									@RequestParam("pass") String pass,
+									@RequestParam("tip") String type)	{
+		
+		ModelAndView mv = new ModelAndView("login");
+		
+		User user = new User(userName,pass,type,null,null);
+		dbService.insertUser(user);
+		
+		return mv;
+	}
 	@RequestMapping("/produce")
 	public ModelAndView produce(){
 		

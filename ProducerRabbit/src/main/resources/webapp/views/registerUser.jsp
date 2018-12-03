@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<form method = "POST" action = "/ProducerRabbit/add/user">
+	<form method = "GET" action = "/ProducerRabbit/login">
 		<input type = "text" value = "Username" name="username"><br>
 		<input type = "text" value = "Password" name="pass"><br>
 		<input type = "text" value = "Type" name="tip"><br>
