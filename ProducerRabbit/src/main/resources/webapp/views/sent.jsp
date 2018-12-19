@@ -7,9 +7,9 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>sent ${name}</h1>
-	<form method = "POST" action = "/ProducerRabbit/consume">
-	    <input type = "submit" value = "Submit-Consume"/>
+	<h1>sent ${data}</h1>
+	<form action = "localhost:8080/ProducerRabbit/produceInfo">
+	    <input type = "submit" value = "Back to menu"/>
     </form>
 </body>
 </html>

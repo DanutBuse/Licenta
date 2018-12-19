@@ -1,8 +1,12 @@
 package com.rab.producer.ProducerRabbit.web;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,43 +33,14 @@ public class WebController {
 	DbService dbService;
 	
 	
-	@RequestMapping(value = "/send", method = RequestMethod.POST)
-	public ModelAndView sendMsg(@ModelAttribute("name") String name){
-		producer.produceMsg(name,dbService.getUserById(1).getExchange().getExchangeName(),dbService.getUserById(1).getExchange().getRoutingKey());
-		ModelAndView mv = new ModelAndView("sent");
-		return mv;
-	}
 	
+	//se inreg
 	@RequestMapping(value = "/")
 	public ModelAndView init() {
 		//return "redirect:add/user";
 		return new ModelAndView("registerUser");
 	}
-	@RequestMapping(value = "/login",method = RequestMethod.POST)
-	public ModelAndView addUserPost(@RequestParam("username") String userName,
-									@RequestParam("pass") String pass,
-									HttpServletResponse response)	{
-		
-		//view menu
-		ModelAndView mv = new ModelAndView("sent");
-		
-		User user = dbService.getUserByName(userName);
-		if(dbService.check(user,pass)) {
-			response.addCookie(new Cookie("loggedIn","1"));
-		}
-		else
-			{
-				response.addCookie(new Cookie("loggedIn","0"));
-				return new ModelAndView("login");
-			}
-		dbService.setUserQueueExchange(user);
-		
-		consumer.declareQueue(user.getQueue().getQueueName(), 
-							  user.getExchange().getExchangeName(),
-							  user.getExchange().getRoutingKey());
-		
-		return mv;
-	}
+	//baga in DB si trimite login.jsp
 	@RequestMapping(value = "/login",method = RequestMethod.GET)
 	public ModelAndView registerUserPost(@RequestParam("username") String userName,
 									@RequestParam("pass") String pass,
@@ -78,21 +53,75 @@ public class WebController {
 		
 		return mv;
 	}
-	@RequestMapping("/produce")
-	public ModelAndView produce(){
+	//se logheaza
+	@RequestMapping(value = "/login",method = RequestMethod.POST)
+	public ModelAndView addUserPost(@RequestParam("username") String userName,
+									@RequestParam("pass") String pass,
+									HttpServletResponse response)	{
 		
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("index");
+		//view menu
+		ModelAndView mv = new ModelAndView("produceInfo");
+		
+		User user = dbService.getUserByName(userName);
+		if(dbService.check(user,pass)) {
+			response.addCookie(new Cookie("loggedIn","1"));
+			response.addCookie(new Cookie("UserName",userName));
+		}
+		else
+		{
+			response.addCookie(new Cookie("loggedIn","0"));
+			return new ModelAndView("login");
+		}
+		
+		dbService.setUserQueueExchange(user);
+		
+		return mv;
+	}
+	@RequestMapping(value = "/send", method = RequestMethod.POST)
+	public ModelAndView sendMsg(@RequestParam("name") String data,
+								@RequestParam("receiver") String receiverName,
+								HttpServletRequest request){
+		
+		List<Cookie> cookies = Arrays.asList(request.getCookies());
+		
+		User loggedUser = dbService.getUserByName(cookies.stream()
+														 .filter(x -> x.getName().equals("UserName") )
+														 .map(x -> x.getValue())
+														 .findFirst()
+														 .get());
+		
+		User receiver = dbService.getUserByName(receiverName);
+		
+		consumer.declareQueue(receiver.getQueue().getQueueName(), 
+				  loggedUser.getExchange().getExchangeName(),
+				  loggedUser.getExchange().getRoutingKey());
+		
+		producer.produceMsg(data,loggedUser.getExchange().getExchangeName()
+							,loggedUser.getExchange().getRoutingKey());
+		
+		ModelAndView mv = new ModelAndView("sent");
+		mv.addObject("data", data);
 		
 		return mv;
 	}
 	
+	
 	@RequestMapping(value = "/consume" , method = RequestMethod.POST)
-	public ModelAndView consumeMsg() {
+	public ModelAndView consumeMsg(HttpServletRequest request) {
+		
 		ModelAndView mv = new ModelAndView("consumed");
-		mv.addObject("message", consumer.recievedMessage());
+		List<Cookie> cookies = Arrays.asList(request.getCookies());
+		
+		User loggedUser = dbService.getUserByName(cookies.stream()
+														 .filter(x -> x.getName().equals("UserName") )
+														 .map(x -> x.getValue())
+														 .findFirst()
+														 .get());
+		
+		mv.addObject("message", consumer.recievedMessage(loggedUser.getQueue().getQueueName()));
 		return mv;
 		
 	}
+	
 }
 

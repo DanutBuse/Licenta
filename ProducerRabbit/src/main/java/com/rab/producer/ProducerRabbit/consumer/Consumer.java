@@ -15,19 +15,11 @@ import com.rabbitmq.client.Envelope;
 @Component
 public class Consumer {
 	
-	String queueName;
 	static String messaege = "";
 	
 	public Consumer() {
 		
 	}
-	public String getQueueName() {
-		return queueName;
-	}
-	public void setQueueName(String queueName) {
-		this.queueName = queueName;
-	}
-
 	
 	public void declareQueue(String queueName,String exchangeName,String rountingKey) {
 		ConnectionFactory factory = new ConnectionFactory();
@@ -38,7 +30,6 @@ public class Consumer {
 		connection = factory.newConnection();
 		
         Channel channel = connection.createChannel();
-        this.queueName=queueName;
         
         channel.exchangeDeclare(exchangeName, "direct",true);
         channel.queueDeclare(queueName, true, false, false, null);
@@ -57,7 +48,7 @@ public class Consumer {
 		
 	}
 	//@RabbitListener(queues="${jsa.rabbitmq.queue}")
-    public String recievedMessage() {
+    public String recievedMessage(String queueName) {
 	//	  System.out.println("Recieved Message: " + msg);
     	
     	ConnectionFactory factory = new ConnectionFactory();

@@ -14,9 +14,6 @@
 	    <input type = "submit" value = "Add"/><br>
     </form>
     
-    <form method = "GET" action = "/ProducerRabbit/produce">
-    	<input type = "submit" value = "Produce"/>
-    </form>
     	
 </body>
 </html>

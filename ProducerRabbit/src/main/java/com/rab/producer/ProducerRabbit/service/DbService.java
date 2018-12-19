@@ -46,6 +46,9 @@ public class DbService {
 		QueueEntity queueEntity = new QueueEntity("to"+u.getUsername());
 		u.setExchange(exchangeEntity);
 		u.setQueue(queueEntity);
+		userRepo.save(u);
+		queueRepo.save(queueEntity);
+		exchangeRepo.save(exchangeEntity);
 	}
 	public void setUserCookie(User u) {
 		

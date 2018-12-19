@@ -8,8 +8,8 @@
 </head>
 <body>
 	<h1>Received ${message}</h1>
-	<form method = "GET" action = "/ProducerRabbit/produce">
-	    <input type = "submit" value = "produceAgain"/>
+	<form action = "localhost:8080/ProducerRabbit/produceInfo">
+	    <input type = "submit" value = "Back To Menu"/>
     </form>
 </body>
 </html>
