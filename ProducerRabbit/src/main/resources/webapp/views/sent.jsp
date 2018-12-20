@@ -8,7 +8,7 @@
 </head>
 <body>
 	<h1>sent ${data}</h1>
-	<form action = "localhost:8080/ProducerRabbit/produceInfo">
+	<form method = "GET" action = "/ProducerRabbit/menu">
 	    <input type = "submit" value = "Back to menu"/>
     </form>
 </body>

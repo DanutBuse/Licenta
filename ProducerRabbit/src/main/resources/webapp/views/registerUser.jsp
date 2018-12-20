@@ -7,13 +7,16 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<form method = "GET" action = "/ProducerRabbit/login">
+	<form method = "POST" action = "/ProducerRabbit/register">
 		<input type = "text" value = "Username" name="username"><br>
 		<input type = "text" value = "Password" name="pass"><br>
 		<input type = "text" value = "Type" name="tip"><br>
-	    <input type = "submit" value = "Add"/><br>
+	    <input type = "submit" value = "Register"/><br>
     </form>
-    
+    <form method = "GET" action = "/ProducerRabbit/login">
+    	Go To Login Page <br>
+	    <input type = "submit" value = "Login"/><br>
+    </form>
     	
 </body>
 </html>

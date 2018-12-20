@@ -47,9 +47,7 @@ public class Consumer {
 	}
 		
 	}
-	//@RabbitListener(queues="${jsa.rabbitmq.queue}")
     public String recievedMessage(String queueName) {
-	//	  System.out.println("Recieved Message: " + msg);
     	
     	ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -61,20 +59,24 @@ public class Consumer {
         Channel channel = connection.createChannel();
         channel.queueDeclare(queueName, true, false, false, null);
         
-        DefaultConsumer consumer = new DefaultConsumer(channel) {
-            @Override
-            public void handleDelivery(String consumerTag, Envelope envelope,
-                                       AMQP.BasicProperties properties, byte[] body) throws IOException {
-              String message = new String(body, "UTF-8");
-              Consumer.messaege = message;
-              System.out.println(" [x] Received '" + message + "'");
-            }
-          };
-          
-        channel.basicConsume(queueName, true, consumer);
+//        DefaultConsumer consumer = new DefaultConsumer(channel) {
+//            @Override
+//            public void handleDelivery(String consumerTag, Envelope envelope,
+//                                       AMQP.BasicProperties properties, byte[] body) throws IOException {
+//              String message = new String(body, "UTF-8");
+//              Consumer.messaege = message;
+//              System.out.println(" [x] Received '" + message + "'");
+//            }
+//          };
+       // channel.basicConsume(queueName, true, consumer);
+       
+        //IA mesaj cu mesaj
+        String mesaj = new String(channel.basicGet(queueName, true).getBody(), "UTF-8");
+        
         channel.close();
         connection.close();
-        String mesaj = Consumer.messaege;
+       
+        // String mesaj = Consumer.messaege;
         
         return mesaj;
 		} catch (IOException e) {

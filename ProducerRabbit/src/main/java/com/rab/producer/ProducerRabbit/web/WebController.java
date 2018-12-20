@@ -40,19 +40,28 @@ public class WebController {
 		//return "redirect:add/user";
 		return new ModelAndView("registerUser");
 	}
+	@RequestMapping(value = "/register" ,method = RequestMethod.GET)
+	public ModelAndView registerView() {
+		return new ModelAndView("registerUser");
+	}
 	//baga in DB si trimite login.jsp
-	@RequestMapping(value = "/login",method = RequestMethod.GET)
+	@RequestMapping(value = "/register",method = RequestMethod.POST)
 	public ModelAndView registerUserPost(@RequestParam("username") String userName,
 									@RequestParam("pass") String pass,
 									@RequestParam("tip") String type)	{
 		
-		ModelAndView mv = new ModelAndView("login");
+		ModelAndView mv = new ModelAndView("registerUser");
 		
-		User user = new User(userName,pass,type,null,null);
-		dbService.insertUser(user);
+		dbService.insertUser(userName,pass,type,null,null);
 		
 		return mv;
 	}
+	
+	@RequestMapping(value = "/login" ,method = RequestMethod.GET)
+	public ModelAndView loginView() {
+		return new ModelAndView("login");
+	}
+	
 	//se logheaza
 	@RequestMapping(value = "/login",method = RequestMethod.POST)
 	public ModelAndView addUserPost(@RequestParam("username") String userName,
@@ -77,11 +86,27 @@ public class WebController {
 		
 		return mv;
 	}
+	@RequestMapping(value = "/menu",method = RequestMethod.GET)
+	public ModelAndView produceInfoMenu(HttpServletRequest request) {
+		
+		List<Cookie> cookies = Arrays.asList(request.getCookies());
+		String loggedIn = cookies.stream()
+								 .filter(x -> x.getName().equals("loggedIn") )
+								 .map(x -> x.getValue())
+								 .findFirst()
+								 .get();
+	
+		if(loggedIn.equals("1"))
+			return new ModelAndView("produceInfo");
+		else
+			return new ModelAndView("login");
+	
+	}
 	@RequestMapping(value = "/send", method = RequestMethod.POST)
 	public ModelAndView sendMsg(@RequestParam("name") String data,
 								@RequestParam("receiver") String receiverName,
 								HttpServletRequest request){
-		
+	
 		List<Cookie> cookies = Arrays.asList(request.getCookies());
 		
 		User loggedUser = dbService.getUserByName(cookies.stream()
@@ -94,10 +119,10 @@ public class WebController {
 		
 		consumer.declareQueue(receiver.getQueue().getQueueName(), 
 				  loggedUser.getExchange().getExchangeName(),
-				  loggedUser.getExchange().getRoutingKey());
+				  receiver.getExchange().getRoutingKey());
 		
 		producer.produceMsg(data,loggedUser.getExchange().getExchangeName()
-							,loggedUser.getExchange().getRoutingKey());
+							,receiver.getExchange().getRoutingKey());
 		
 		ModelAndView mv = new ModelAndView("sent");
 		mv.addObject("data", data);

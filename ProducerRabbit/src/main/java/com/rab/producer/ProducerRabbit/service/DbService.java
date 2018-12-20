@@ -29,6 +29,10 @@ public class DbService {
 	public void insertUser(User user) {
 		userRepo.save(user);
 	}
+	public void insertUser(String userName,String pass,String type,ExchangeEntity exchange,QueueEntity queue) {
+		User u = new User(userName,pass,type,exchange,queue);
+		userRepo.save(u);
+	}
 	public void insertQueue(QueueEntity queue) {
 		queueRepo.save(queue);
 	}
@@ -42,7 +46,7 @@ public class DbService {
 		return userRepo.getByName(username);
 	}
 	public void setUserQueueExchange(User u) {
-		ExchangeEntity exchangeEntity = new ExchangeEntity("from"+u.getUsername(),"jsa.rountingkey");
+		ExchangeEntity exchangeEntity = new ExchangeEntity("from"+u.getUsername(),"jsa.rountingkey"+u.getUsername());
 		QueueEntity queueEntity = new QueueEntity("to"+u.getUsername());
 		u.setExchange(exchangeEntity);
 		u.setQueue(queueEntity);
