@@ -51,12 +51,8 @@ public class DbService {
 		u.setExchange(exchangeEntity);
 		u.setQueue(queueEntity);
 		userRepo.save(u);
-		queueRepo.save(queueEntity);
-		exchangeRepo.save(exchangeEntity);
 	}
-	public void setUserCookie(User u) {
-		
-	}
+	
 	public boolean check(User user, String pass) {
 		return user.getPassword().equals(pass);
 	}
