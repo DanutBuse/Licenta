@@ -1,4 +1,4 @@
-package com.rab.producer.ProducerRabbit.consumer;
+package com.rab.producer.ProducerRabbit.service;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -13,11 +13,11 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 @Component
-public class Consumer {
+public class ConsumerService {
 	
 	static String messaege = "";
 	
-	public Consumer() {
+	public ConsumerService() {
 		
 	}
 	

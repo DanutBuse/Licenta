@@ -1,4 +1,4 @@
-package com.rab.producer.ProducerRabbit.producer;
+package com.rab.producer.ProducerRabbit.service;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -13,7 +13,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 
 @Component
-public class Producer {
+public class ProducerService {
 	
 	@Autowired
 	private AmqpTemplate amqpTemplate;

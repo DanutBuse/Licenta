@@ -9,16 +9,16 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.rab.producer.ProducerRabbit.consumer.Consumer;
 import com.rab.producer.ProducerRabbit.entity.User;
-import com.rab.producer.ProducerRabbit.producer.Producer;
+import com.rab.producer.ProducerRabbit.service.ConsumerService;
 import com.rab.producer.ProducerRabbit.service.DbService;
+import com.rab.producer.ProducerRabbit.service.ProducerService;
+
 
 
 
@@ -26,9 +26,9 @@ import com.rab.producer.ProducerRabbit.service.DbService;
 public class WebController {
 	
 	@Autowired
-	Producer producer;
+	ProducerService ProducerService;
 	@Autowired
-	Consumer consumer;
+	ConsumerService ConsumerService;
 	@Autowired
 	DbService dbService;
 	
@@ -117,11 +117,11 @@ public class WebController {
 		
 		User receiver = dbService.getUserByName(receiverName);
 		
-		consumer.declareQueue(receiver.getQueue().getQueueName(), 
+		ConsumerService.declareQueue(receiver.getQueue().getQueueName(), 
 				  loggedUser.getExchange().getExchangeName(),
 				  receiver.getExchange().getRoutingKey());
 		
-		producer.produceMsg(data,loggedUser.getExchange().getExchangeName()
+		ProducerService.produceMsg(data,loggedUser.getExchange().getExchangeName()
 							,receiver.getExchange().getRoutingKey());
 		
 		ModelAndView mv = new ModelAndView("sent");
@@ -143,7 +143,7 @@ public class WebController {
 														 .findFirst()
 														 .get());
 		
-		mv.addObject("message", consumer.recievedMessage(loggedUser.getQueue().getQueueName()));
+		mv.addObject("message", ConsumerService.recievedMessage(loggedUser.getQueue().getQueueName()));
 		return mv;
 		
 	}
