@@ -53,6 +53,7 @@ public class WebController {
 		ModelAndView mv = new ModelAndView("registerUser");
 		
 		dbService.insertUser(userName,pass,type,null,null);
+		dbService.setUserQueueExchange(dbService.getUserByName(userName));
 		
 		return mv;
 	}
@@ -81,8 +82,6 @@ public class WebController {
 			response.addCookie(new Cookie("loggedIn","0"));
 			return new ModelAndView("login");
 		}
-		
-		dbService.setUserQueueExchange(user);
 		
 		return mv;
 	}

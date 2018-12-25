@@ -71,7 +71,7 @@ public class ConsumerService {
        // channel.basicConsume(queueName, true, consumer);
        
         //IA mesaj cu mesaj
-        String mesaj = new String(channel.basicGet(queueName, true).getBody(), "UTF-8");
+        String mesaj = new String(channel.basicGet(queueName, true).toString());
         
         channel.close();
         connection.close();
