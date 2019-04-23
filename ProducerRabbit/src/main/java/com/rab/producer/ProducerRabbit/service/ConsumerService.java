@@ -1,30 +1,72 @@
 package com.rab.producer.ProducerRabbit.service;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import com.rabbitmq.client.AMQP;
+import com.rab.producer.ProducerRabbit.CarMapper;
+import com.rab.producer.ProducerRabbit.OfertaDtoMapper;
+import com.rab.producer.ProducerRabbit.dto.OfertaDTO;
+import com.rab.producer.ProducerRabbit.entity.CarEntity;
+import com.rab.producer.ProducerRabbit.entity.MessageEntity;
+import com.rab.producer.ProducerRabbit.entity.OfertaEntity;
+import com.rab.producer.ProducerRabbit.entity.User;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.GetResponse;
 
-@Component
+@Service
 public class ConsumerService {
-	
-	static String messaege = "";
 	
 	public ConsumerService() {
 		
+	}
+	
+	public boolean isQueueEmpty(String queueName) {
+		
+		ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection;
+        long count = 0;
+        
+		try {
+			
+			connection = factory.newConnection();
+			
+	        Channel channel = connection.createChannel();
+	        
+	        count = channel.messageCount(queueName);
+	        
+	        channel.close();
+	        connection.close();
+        
+		} catch (IOException | TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	
+		if(count == 0) {
+			return true;
+		}
+		else
+			return false;
 	}
 	
 	public void declareQueue(String queueName,String exchangeName,String rountingKey) {
 		ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection;
+        
 		try {
 			
 		connection = factory.newConnection();
@@ -38,54 +80,239 @@ public class ConsumerService {
         channel.close();
         connection.close();
         
-	} catch (IOException e) {
+	} catch (IOException | TimeoutException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
-	} catch (TimeoutException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	} 
 		
 	}
-    public String recievedMessage(String queueName) {
-    	
-    	ConnectionFactory factory = new ConnectionFactory();
+
+//    public List<MessageEntity> receivedMessages(User receiver){
+//    	ConnectionFactory factory = new ConnectionFactory();
+//        factory.setHost("localhost");
+//        Connection connection;
+//        
+//        List<MessageEntity> messages = new ArrayList<>();
+//        String queueName = receiver.getQueue().getQueueName();
+//		try {
+//			
+//		connection = factory.newConnection();
+//		
+//        Channel channel = connection.createChannel();
+//        
+//        MessageEntity currentMessage = new MessageEntity("", new User(), receiver);
+//        
+//        GetResponse response = channel.basicGet(queueName, true);
+//        
+//        while(response != null) {
+//        	
+//        	setMessageProperties(response,currentMessage);
+//            
+//            messages.add(currentMessage);
+//            
+//            currentMessage = new MessageEntity("No data", new User(), receiver);
+//            
+//            response = channel.basicGet(queueName, true);
+//        }
+//        
+//        channel.close();
+//        connection.close();
+//        
+//		} catch (IOException | TimeoutException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return messages;
+//    }
+	
+	 public List<MessageEntity> receivedMessagesCustomer(User receiver){
+	    	ConnectionFactory factory = new ConnectionFactory();
+	        factory.setHost("localhost");
+	        Connection connection;
+	        
+	        List<MessageEntity> messages = new ArrayList<>();
+	        String queueName = receiver.getQueue().getQueueName();
+			try {
+				
+			connection = factory.newConnection();
+			
+	        Channel channel = connection.createChannel();
+	        
+	        MessageEntity currentMessage = new MessageEntity(new CarEntity(), new User(), receiver,null,"",true,true);
+	        
+	        GetResponse response = channel.basicGet(queueName, true);
+	        
+	        while(response != null) {
+	        	
+	        	setMessagePropertiesCustomer(response,currentMessage);
+	            
+	            messages.add(currentMessage);
+	            
+	            currentMessage = new MessageEntity(new CarEntity(), new User(), receiver,null,"",true,true);
+	            
+	            response = channel.basicGet(queueName, true);
+	        }
+	        
+	        channel.close();
+	        connection.close();
+	        
+			} catch (IOException | TimeoutException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return messages;
+	    }
+	 
+//	 private void setMessageProperties(GetResponse response, MessageEntity currentMessage) {
+//	    	
+//	    	DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//	    	
+//	    	currentMessage.getSender().setUsername(String.valueOf(response.getProps().getHeaders().get("sender")));
+//	    	
+//	    	try {
+//	    		CarEntity car = CarMapper.toEntity(response.getBody());
+//	    		car.setClient(currentMessage.getSender());
+//	    		//currentMessage set Oferta 
+//	    		
+//	    		currentMessage.setMasina(car);
+//	    		currentMessage.setDescriere(String.valueOf(response.getProps().getHeaders().get("description")));
+//				currentMessage.setSentDate(format.parse( String.valueOf(response.getProps().getHeaders().get("sentDate"))));
+//				
+//				Date date = format.parse(format.format(new Date()));  
+//	            Timestamp x = new Timestamp(date.getTime()); 
+//	           
+//				currentMessage.setReceivedDate(x);
+//				
+//			} catch (ParseException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//	    	
+//	        
+//	    }
+
+	 private void setMessagePropertiesCustomer(GetResponse response, MessageEntity currentMessage) {
+ 	
+ 	DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+ 	
+ 	currentMessage.getSender().setUsername(String.valueOf(response.getProps().getHeaders().get("sender")));//trb pus user mai apoi
+ 	
+ 	try {
+ 		
+ 		Map<String, Object> map = response.getProps().getHeaders();
+ 		currentMessage.getMasina().setId(Integer.parseInt(String.valueOf(map.get("idMasina"))));
+ 		currentMessage.setDescriere(String.valueOf(map.get("descriereNoua")));
+		currentMessage.setSentDate(format.parse( String.valueOf(response.getProps().getHeaders().get("sentDate"))));
+			
+		Date date = format.parse(format.format(new Date()));  
+        Timestamp x = new Timestamp(date.getTime()); 
+        
+		currentMessage.setReceivedDate(x);
+		
+		List<OfertaEntity> oferte = new ArrayList<>();
+		for(int i = 0; i < Integer.parseInt(String.valueOf(map.get("numarOferte"))); i++) {
+			OfertaEntity ent = OfertaDtoMapper.fromDTO( OfertaDTO.fromBytes( (byte[]) map.get("oferta" + i)));
+			ent.setMesaj(currentMessage);
+			oferte.add(ent);
+		}
+		currentMessage.setOferte(oferte);
+		currentMessage.setId( Integer.parseInt(String.valueOf(map.get("idMesaj"))));
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+ 	
+     
+ }
+	public void deleteQueue(String queueName) {
+		ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection;
+        
+		try {
+			
+		connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+ 
+        channel.queueDelete(queueName);
+        
+        channel.close();
+        connection.close();
+        
+		} catch (IOException | TimeoutException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	public List<MessageEntity> receivedMessagesSupport(User receiver) {
+	
+		ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection;
+        
+        List<MessageEntity> messages = new ArrayList<>();
+        String queueName = receiver.getQueue().getQueueName();
 		try {
 			
 		connection = factory.newConnection();
 		
         Channel channel = connection.createChannel();
-        channel.queueDeclare(queueName, true, false, false, null);
         
-//        DefaultConsumer consumer = new DefaultConsumer(channel) {
-//            @Override
-//            public void handleDelivery(String consumerTag, Envelope envelope,
-//                                       AMQP.BasicProperties properties, byte[] body) throws IOException {
-//              String message = new String(body, "UTF-8");
-//              Consumer.messaege = message;
-//              System.out.println(" [x] Received '" + message + "'");
-//            }
-//          };
-       // channel.basicConsume(queueName, true, consumer);
-       
-        //IA mesaj cu mesaj
-        String mesaj = new String(channel.basicGet(queueName, true).toString());
+        MessageEntity currentMessage = new MessageEntity(new CarEntity(), new User(), receiver,null,"",true,true);
+        
+        GetResponse response = channel.basicGet(queueName, true);
+        
+        while(response != null) {
+        	
+        	setMessagePropertiesSupport(response,currentMessage);
+            
+            messages.add(currentMessage);
+            
+            currentMessage = new MessageEntity(new CarEntity(), new User(), receiver,null,"",true,true);
+            
+            response = channel.basicGet(queueName, true);
+        }
         
         channel.close();
         connection.close();
-       
-        // String mesaj = Consumer.messaege;
         
-        return mesaj;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TimeoutException e) {
+		} catch (IOException | TimeoutException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return "";
-    }
+		return messages;
+	}
+
+	private void setMessagePropertiesSupport(GetResponse response, MessageEntity currentMessage) {
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	 	
+	 	currentMessage.getSender().setUsername(String.valueOf(response.getProps().getHeaders().get("sender")));//trb pus user mai apoi
+	 	
+	 	try {
+	 		
+	 		Map<String, Object> map = response.getProps().getHeaders();
+	 		
+	 		CarEntity car = CarMapper.toEntity(response.getBody());
+    		car.setClient(currentMessage.getSender()); 
+    		
+    		currentMessage.setMasina(car);
+	 		currentMessage.setDescriere(String.valueOf(map.get("description")));
+			currentMessage.setSentDate(format.parse( String.valueOf(response.getProps().getHeaders().get("sentDate"))));
+				
+			Date date = format.parse(format.format(new Date()));  
+	        Timestamp x = new Timestamp(date.getTime()); 
+	        
+			currentMessage.setReceivedDate(x);
+			
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+
 }

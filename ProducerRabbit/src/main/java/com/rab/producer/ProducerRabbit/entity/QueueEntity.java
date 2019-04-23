@@ -18,7 +18,7 @@ public class QueueEntity {
 	Integer id;
 	
 	@Column(name="name")
-	String queue;
+	String queueName;
 	
 	@OneToOne(mappedBy ="queue")
 	User receiver;
@@ -29,7 +29,7 @@ public class QueueEntity {
 	public QueueEntity(String queue) {
 		super();
 		
-		this.queue = queue;
+		this.queueName = queue;
 	}
 
 	public Integer getId() {
@@ -41,11 +41,11 @@ public class QueueEntity {
 	}
 
 	public String getQueueName() {
-		return queue;
+		return queueName;
 	}
 
 	public void setQueue(String queue) {
-		this.queue = queue;
+		this.queueName = queue;
 	}
 
 	public User getReceiver() {

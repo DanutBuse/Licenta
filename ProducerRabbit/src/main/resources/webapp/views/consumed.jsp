@@ -7,7 +7,8 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>Received ${message}</h1>
+	<!--  <%@include file="navbar.jsp" %>-->
+	<h1>From ${message.sender.username} Received ${message.data}</h1>
 	<form method = "GET" action = "/ProducerRabbit/menu">
 	    <input type = "submit" value = "Back to menu"/>
     </form>

@@ -1,5 +1,9 @@
 package com.rab.producer.ProducerRabbit.entity;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -21,10 +26,15 @@ public class User {
 
 	@Column(name="username")
 	String username;
+	
 	@Column(name="password")
 	String password;
+	
 	@Column(name="tip")
 	String tipUtilizator;
+	
+	@Column(name="disponibil")
+	boolean available;
 	
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="exchange")
@@ -33,7 +43,16 @@ public class User {
 	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="queue")
 	QueueEntity queue;
+	
+	@OneToMany(mappedBy ="sender",cascade=CascadeType.ALL)
+	Set<MessageEntity> senderMes = new HashSet<>();
 
+	@OneToMany(mappedBy ="receiver",cascade=CascadeType.ALL)
+	Set<MessageEntity> receiverMes = new HashSet<>();
+	
+	@OneToMany(mappedBy ="client",cascade=CascadeType.ALL)
+	Set<CarEntity> cars = new HashSet<>();
+	
 	
 	public User() {
 		
@@ -50,11 +69,18 @@ public class User {
 	public Integer getId() {
 		return id;
 	}
-
+	
 	public void setId(Integer id) {
 		this.id = id;
 	}
-
+	
+	public Set<CarEntity> getCars() {
+		return cars;
+	}
+	public void setCars(Set<CarEntity> cars) {
+		this.cars = cars;
+	}
+	
 	public String getUsername() {
 		return username;
 	}
@@ -96,6 +122,35 @@ public class User {
 		this.queue = queue;
 		this.queue.setReceiver(this);
 	}
-	
+	public Set<MessageEntity> getSendedMesseges() {
+		return senderMes;
+	}
+	public void setSendedMessages(Set<MessageEntity> senderMes) {
+		this.senderMes = senderMes;
+	}
+	public Set<MessageEntity> getReceivedMessages() {
+		return receiverMes;
+	}
+	public void setReceivedMesssages(Set<MessageEntity> receiverMes) {
+		this.receiverMes = receiverMes;
+	}
+	public boolean getAvailable() {
+		return available;
+	}
+	public void setAvailable(boolean b) {
+		this.available = b;
+	}
+	public Set<MessageEntity> getSenderMes() {
+		return senderMes;
+	}
+	public void setSenderMes(Set<MessageEntity> senderMes) {
+		this.senderMes = senderMes;
+	}
+	public Set<MessageEntity> getReceiverMes() {
+		return receiverMes;
+	}
+	public void setReceiverMes(Set<MessageEntity> receiverMes) {
+		this.receiverMes = receiverMes;
+	}
 	
 }
