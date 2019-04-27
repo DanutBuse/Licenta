@@ -150,7 +150,7 @@ public class WebController {
 	
 
 	@RequestMapping(value = "/sendMessageCustomer", method = RequestMethod.POST)
-	public ModelAndView sendMsgCustomer(@RequestParam("marca") String marca,
+	public String sendMsgCustomer(@RequestParam("marca") String marca,
 								@RequestParam("tip") String tip,
 								@RequestParam("vin") String vin,
 								@RequestParam("an") String an,
@@ -160,7 +160,7 @@ public class WebController {
 		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
 
 		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
-			return new ModelAndView("login");
+			return "redirect:menu";
 		
 		User sender = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		
@@ -179,23 +179,20 @@ public class WebController {
 								   		 receiver.getExchange().getRoutingKey(),
 								   		 sender.getUsername());
 		
-		ModelAndView mv = new ModelAndView("sentMessages");
-	//	mv.addObject("data", "true");
-		
-		return mv;
+		return "redirect:sentMessages";
 	}
 	
 	@RequestMapping(value = "/sendMessageSupport", method = RequestMethod.POST)
-	public ModelAndView sendMsgSupport(@RequestParam Map<String, String> parameters,
+	public String sendMsgSupport(@RequestParam Map<String, String> parameters,
 								HttpServletRequest request){
 	
 		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
 
 		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
-			return new ModelAndView("login");
+			return "redirect:menu";
 		
 		String idMesaj = parameters.get("idMesaj");
-		String idMasina = dbService.getMessageById(Integer.parseInt(idMesaj)).getMasina().getId().toString();
+		String idMasina = dbService.getMessageById(Integer.parseInt(idMesaj)).getMasina().getVin();
 		
 		User customer = dbService.getMessageById(Integer.parseInt(idMesaj)).getSender();
 		User sender = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
@@ -222,35 +219,9 @@ public class WebController {
 											   customer.getExchange().getRoutingKey(), sender.getUsername(), descriereVeche,
 											   idMasina);
 		
-		ModelAndView mv = new ModelAndView("sentMessages");
-		
-		return mv;
+		return "redirect:sentMessages";
 	}
 	
-//	@RequestMapping(value = "/consumeAll" , method = RequestMethod.GET)
-//	public ModelAndView consumeAllMsg(HttpServletRequest request) {
-//		
-//		ModelAndView mv = new ModelAndView("consumedAll");
-//		
-//		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
-//		
-//		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
-//			return new ModelAndView("login");
-//		
-//		User receiver = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
-//		
-//		List<MessageEntity> messages = ConsumerService.receivedMessages(receiver);
-//		
-//		dbService.insertCars(messages);
-//		dbService.insertMessages(messages);
-//		
-//		messages.stream().forEach( m -> dbService.addOferte(m));
-//		
-//		mv.addObject("messages", dbService.messagesByReceiver(receiver));
-//		
-//		return mv;
-//		
-//	}
 	@RequestMapping(value = "/consumeAll", method = RequestMethod.GET)
 	public String redirectToGoodConsumePage(HttpServletRequest request) {
 		
@@ -266,7 +237,7 @@ public class WebController {
 	@RequestMapping(value = "/consumeAllCustomer" , method = RequestMethod.GET)
 	public ModelAndView consumeAllMsg(HttpServletRequest request) {
 		
-		ModelAndView mv = new ModelAndView("consumedAll");
+		ModelAndView mv = new ModelAndView("consumedAllCustomer");
 		
 		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
 		
@@ -277,7 +248,7 @@ public class WebController {
 		
 		List<MessageEntity> messages = ConsumerService.receivedMessagesCustomer(receiver);
 		
-		messages.stream().forEach( m -> m.setMasina(dbService.getMasinaById(m.getMasina().getId())));
+		messages.stream().forEach( m -> m.setMasina(dbService.getMasinaById(m.getMasina().getVin())));
 		
 		dbService.insertCars(messages);
 		dbService.insertMessagesCustomer(messages);
@@ -293,7 +264,7 @@ public class WebController {
 	@RequestMapping(value = "/consumeAllSupport" , method = RequestMethod.GET)
 	public ModelAndView consumeAllMsgSupport(HttpServletRequest request) {
 		
-		ModelAndView mv = new ModelAndView("consumedAll");
+		ModelAndView mv = new ModelAndView("consumedAllSupport");
 		
 		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
 		
@@ -322,6 +293,27 @@ public class WebController {
 		
 		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
 			return new ModelAndView("login");
+		
+		User loggedUser = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+		
+		mv.addObject("messages",dbService.sentMessagesBy(loggedUser));
+		
+		return mv;
+		
+	}
+	
+	@RequestMapping(value = "/sendReplyFromSupport" , method = RequestMethod.POST)
+	public ModelAndView supportReply(HttpServletRequest request, @RequestParam Map<String, String> parameters) {
+		
+		ModelAndView mv = new ModelAndView("sentMessages");
+		
+		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
+		
+		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
+			return new ModelAndView("login");
+		
+		String descriereAditionala = parameters.get("descriereAditionala");
+		String mesajId = parameters.get("mesajId");
 		
 		User loggedUser = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		

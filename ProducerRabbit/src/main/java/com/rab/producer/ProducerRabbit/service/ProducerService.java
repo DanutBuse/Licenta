@@ -15,10 +15,11 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.rab.producer.ProducerRabbit.CarMapper;
 import com.rab.producer.ProducerRabbit.dto.CarDTO;
+import com.rab.producer.ProducerRabbit.dto.MessageWrapperDTO;
 import com.rab.producer.ProducerRabbit.dto.OfertaDTO;
-import com.rab.producer.ProducerRabbit.dto.SupportReplyDTO;
 import com.rab.producer.ProducerRabbit.entity.CarEntity;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -96,12 +97,14 @@ public class ProducerService {
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		MessageProperties prop = new MessageProperties();
-		prop.setHeader("sender", sender);
 		prop.setHeader("sentDate", format.format(new Date()));
-		prop.setHeader("description", des);
 		
 		CarDTO carDTO = CarMapper.toDTO(car);
-		Message message = new Message(carDTO.getBytes(),prop);
+		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, "", carDTO, car.getVin(), des, sender);
+		
+		Gson gson = new Gson();
+		
+		Message message = new Message(gson.toJson(mesaj).getBytes(),prop);
 		
 		amqpTemplate.send(EXCHANGE_NAME, ROUTING_KEY, message);
 		
@@ -113,14 +116,14 @@ public class ProducerService {
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
 		MessageProperties prop = new MessageProperties();
-		prop.setHeader("sender", sender);
 		prop.setHeader("sentDate", format.format(new Date()));
-		prop.setHeader("description", descriere);
 		
 		CarDTO carDTO = new CarDTO(marca,tip,vin,Integer.parseInt(an));
-		//SupportReplyDTO dto = new SupportReplyDTO(null, "", carDTO, descriere);
+		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, "", carDTO, "", descriere, sender);
 		
-		Message message = new Message(carDTO.getBytes(),prop);
+		Gson gson = new Gson();
+		
+		Message message = new Message(gson.toJson(mesaj).getBytes(),prop);
 		
 		amqpTemplate.send(exchangeName, routingKey, message);
 		
@@ -133,17 +136,13 @@ public class ProducerService {
 		
 		MessageProperties prop = new MessageProperties();
 		
-		prop.setHeader("sender", sender);
-		prop.setHeader("idMasina", idMasina);
 		prop.setHeader("sentDate", format.format(new Date()));
-		prop.setHeader("idMesaj", idMesaj);
-		prop.setHeader("descriereNoua", descriereVeche + descriereSuplimentara);
-		prop.setHeader("numarOferte", String.valueOf(listaOferte.size()));
 		
-		for(int i = 0; i < listaOferte.size(); i++)
-			prop.setHeader("oferta" + i, listaOferte.get(i).getBytes());
+		MessageWrapperDTO mesaj = new MessageWrapperDTO(listaOferte, idMesaj, null, idMasina, descriereVeche + descriereSuplimentara, sender);
 		
-		Message message = new Message(null, prop);
+		Gson gson = new Gson();
+		
+		Message message = new Message(gson.toJson(mesaj).getBytes(), prop);
 		
 		amqpTemplate.send(exchangeName, routingKey, message);
 	}

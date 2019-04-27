@@ -13,8 +13,10 @@ import java.util.concurrent.TimeoutException;
 
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.rab.producer.ProducerRabbit.CarMapper;
 import com.rab.producer.ProducerRabbit.OfertaDtoMapper;
+import com.rab.producer.ProducerRabbit.dto.MessageWrapperDTO;
 import com.rab.producer.ProducerRabbit.dto.OfertaDTO;
 import com.rab.producer.ProducerRabbit.entity.CarEntity;
 import com.rab.producer.ProducerRabbit.entity.MessageEntity;
@@ -87,43 +89,6 @@ public class ConsumerService {
 		
 	}
 
-//    public List<MessageEntity> receivedMessages(User receiver){
-//    	ConnectionFactory factory = new ConnectionFactory();
-//        factory.setHost("localhost");
-//        Connection connection;
-//        
-//        List<MessageEntity> messages = new ArrayList<>();
-//        String queueName = receiver.getQueue().getQueueName();
-//		try {
-//			
-//		connection = factory.newConnection();
-//		
-//        Channel channel = connection.createChannel();
-//        
-//        MessageEntity currentMessage = new MessageEntity("", new User(), receiver);
-//        
-//        GetResponse response = channel.basicGet(queueName, true);
-//        
-//        while(response != null) {
-//        	
-//        	setMessageProperties(response,currentMessage);
-//            
-//            messages.add(currentMessage);
-//            
-//            currentMessage = new MessageEntity("No data", new User(), receiver);
-//            
-//            response = channel.basicGet(queueName, true);
-//        }
-//        
-//        channel.close();
-//        connection.close();
-//        
-//		} catch (IOException | TimeoutException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return messages;
-//    }
 	
 	 public List<MessageEntity> receivedMessagesCustomer(User receiver){
 	    	ConnectionFactory factory = new ConnectionFactory();
@@ -163,45 +128,21 @@ public class ConsumerService {
 			return messages;
 	    }
 	 
-//	 private void setMessageProperties(GetResponse response, MessageEntity currentMessage) {
-//	    	
-//	    	DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//	    	
-//	    	currentMessage.getSender().setUsername(String.valueOf(response.getProps().getHeaders().get("sender")));
-//	    	
-//	    	try {
-//	    		CarEntity car = CarMapper.toEntity(response.getBody());
-//	    		car.setClient(currentMessage.getSender());
-//	    		//currentMessage set Oferta 
-//	    		
-//	    		currentMessage.setMasina(car);
-//	    		currentMessage.setDescriere(String.valueOf(response.getProps().getHeaders().get("description")));
-//				currentMessage.setSentDate(format.parse( String.valueOf(response.getProps().getHeaders().get("sentDate"))));
-//				
-//				Date date = format.parse(format.format(new Date()));  
-//	            Timestamp x = new Timestamp(date.getTime()); 
-//	           
-//				currentMessage.setReceivedDate(x);
-//				
-//			} catch (ParseException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//	    	
-//	        
-//	    }
 
 	 private void setMessagePropertiesCustomer(GetResponse response, MessageEntity currentMessage) {
  	
  	DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
  	
- 	currentMessage.getSender().setUsername(String.valueOf(response.getProps().getHeaders().get("sender")));//trb pus user mai apoi
+ 	Gson gson = new Gson();
+ 	
+ 	MessageWrapperDTO mesaj = gson.fromJson(new String(response.getBody()), MessageWrapperDTO.class);
+ 	
+ 	currentMessage.getSender().setUsername(mesaj.getSenderName());//trb pus user mai apoi
  	
  	try {
- 		
- 		Map<String, Object> map = response.getProps().getHeaders();
- 		currentMessage.getMasina().setId(Integer.parseInt(String.valueOf(map.get("idMasina"))));
- 		currentMessage.setDescriere(String.valueOf(map.get("descriereNoua")));
+ 	
+ 		currentMessage.getMasina().setVin(mesaj.getIdCar());
+ 		currentMessage.setDescriere(mesaj.getDescriere());
 		currentMessage.setSentDate(format.parse( String.valueOf(response.getProps().getHeaders().get("sentDate"))));
 			
 		Date date = format.parse(format.format(new Date()));  
@@ -210,13 +151,13 @@ public class ConsumerService {
 		currentMessage.setReceivedDate(x);
 		
 		List<OfertaEntity> oferte = new ArrayList<>();
-		for(int i = 0; i < Integer.parseInt(String.valueOf(map.get("numarOferte"))); i++) {
-			OfertaEntity ent = OfertaDtoMapper.fromDTO( OfertaDTO.fromBytes( (byte[]) map.get("oferta" + i)));
+		for(int i = 0; i < mesaj.getListaOferte().size(); i++) {
+			OfertaEntity ent = OfertaDtoMapper.fromDTO(mesaj.getListaOferte().get(i));
 			ent.setMesaj(currentMessage);
 			oferte.add(ent);
 		}
 		currentMessage.setOferte(oferte);
-		currentMessage.setId( Integer.parseInt(String.valueOf(map.get("idMesaj"))));
+		currentMessage.setId( Integer.parseInt(mesaj.getIdMesaj()));
 			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -289,17 +230,19 @@ public class ConsumerService {
 	private void setMessagePropertiesSupport(GetResponse response, MessageEntity currentMessage) {
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	 	
-	 	currentMessage.getSender().setUsername(String.valueOf(response.getProps().getHeaders().get("sender")));//trb pus user mai apoi
+		Gson gson = new Gson();
+	 	
+	 	MessageWrapperDTO mesaj = gson.fromJson(new String(response.getBody()), MessageWrapperDTO.class);
+	 	
+	 	currentMessage.getSender().setUsername(mesaj.getSenderName());//trb pus user mai apoi
 	 	
 	 	try {
 	 		
-	 		Map<String, Object> map = response.getProps().getHeaders();
-	 		
-	 		CarEntity car = CarMapper.toEntity(response.getBody());
+	 		CarEntity car = CarMapper.toEntity(mesaj.getCar());
     		car.setClient(currentMessage.getSender()); 
     		
     		currentMessage.setMasina(car);
-	 		currentMessage.setDescriere(String.valueOf(map.get("description")));
+	 		currentMessage.setDescriere(mesaj.getDescriere());
 			currentMessage.setSentDate(format.parse( String.valueOf(response.getProps().getHeaders().get("sentDate"))));
 				
 			Date date = format.parse(format.format(new Date()));  

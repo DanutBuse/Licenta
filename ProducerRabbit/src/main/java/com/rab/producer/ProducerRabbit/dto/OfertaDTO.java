@@ -1,12 +1,6 @@
 package com.rab.producer.ProducerRabbit.dto;
 
-import java.io.Serializable;
-
-import org.springframework.util.SerializationUtils;
-
-
-public class OfertaDTO implements Serializable{
-	private static final long serialVersionUID = 1L;
+public class OfertaDTO{
 	
 	private String numePiesa;
 	private String producator;
@@ -47,41 +41,4 @@ public class OfertaDTO implements Serializable{
 		this.pret = pret;
 	}
 
-	public byte[] getBytes() {
-//        byte[]bytes;
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        try{
-//            ObjectOutputStream oos = new ObjectOutputStream(baos);
-//            oos.writeObject(this);
-//            oos.flush();
-//            oos.reset();
-//            bytes = baos.toByteArray();
-//            oos.close();
-//            baos.close();
-//        } catch(IOException e){
-//            bytes = new byte[] {};
-//        }
-//        return bytes;
-		return SerializationUtils.serialize(this);
-    }
-
-    public static OfertaDTO fromBytes(byte[] body) {
-//    	OfertaDTO obj = null;
-//        try {
-//            ByteArrayInputStream bis = new ByteArrayInputStream(body);
-//            ObjectInputStream ois = new ObjectInputStream(bis);
-//            obj = (OfertaDTO) ois.readObject();
-//            ois.close();
-//            bis.close();
-//        }
-//        catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        catch (ClassNotFoundException ex) {
-//            ex.printStackTrace();
-//        }
-//        return obj;
-    	return (OfertaDTO) SerializationUtils.deserialize(body);
-    }
-    
 }

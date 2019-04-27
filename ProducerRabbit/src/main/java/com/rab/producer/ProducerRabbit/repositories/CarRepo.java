@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.rab.producer.ProducerRabbit.entity.CarEntity;
 
 @Repository
-public interface CarRepo extends JpaRepository<CarEntity,Integer>{
+public interface CarRepo extends JpaRepository<CarEntity,String>{
 
 }

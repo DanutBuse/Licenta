@@ -18,10 +18,11 @@ public class ClientWebConfig implements WebMvcConfigurer{
 	}
 
 //	@Override
-//	public void addResourceHandlers(final ResourceHandlerRegistry registry) {
-//	    registry.addResourceHandler("/resources/**").
-//	    		addResourceLocations("classpath:/webapp/styles/");
-//	}
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        registry
+//          .addResourceHandler("/webjars/**")
+//          .addResourceLocations("/webjars/");
+//    }
 	
 	@Bean
 	public InternalResourceViewResolver getViewResolver() {

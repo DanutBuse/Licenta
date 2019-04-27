@@ -62,9 +62,9 @@ $(document).ready(function(){
         var addRemove = "#multifield" + (next);
         next = next + 1;
         var newIn = '<div class="row" id="multifield' + next +'">' +
-        			'<div class="column"><input autocomplete="off" class="input form-control" id="numepiesa' + next + '"placeholder="Nume Piesa" name="numepiesa' + next + '" type="text"></div>' +
+        			'<div class="column"><input autocomplete="off" class="input form-control" id="numepiesa' + next + '"placeholder="Nume Piesa" name="numepiesa' + next + '" type="text" style="margin-left:3px"></div>' +
         			'<div class="column"><input autocomplete="off" class="input form-control" style="margin-left:5px" placeholder="Producator" id="producator' + next + '" name="producator' + next + '" type="text"></div>' +
-        			'<div class="column"><input autocomplete="off" class="input form-control" placeholder="Pret" style="margin-left:10px" id="pret' + next + '" name="pret' + next + '" type="text"></div></div>';
+        			'<div class="col-xs-4"><input autocomplete="off" class="input form-control" placeholder="Pret" style="margin-left:10px" id="pret' + next + '" name="pret' + next + '" type="text"></div></div>';
         var newInput = $(newIn);
         var removeBtn = '<button id="remove' + (next - 1) + '" class="btn btn-danger remove-me" style="margin-bottom:10px;margin-top:5px">Sterge oferta de mai sus</button>';
         var removeButton = $(removeBtn);

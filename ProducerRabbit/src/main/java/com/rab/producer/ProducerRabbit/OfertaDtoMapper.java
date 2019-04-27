@@ -3,13 +3,13 @@ package com.rab.producer.ProducerRabbit;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rab.producer.ProducerRabbit.dto.MessageWrapperDTO;
 import com.rab.producer.ProducerRabbit.dto.OfertaDTO;
-import com.rab.producer.ProducerRabbit.dto.SupportReplyDTO;
 import com.rab.producer.ProducerRabbit.entity.OfertaEntity;
 
 public class OfertaDtoMapper {
 
-	public static List<OfertaEntity> fromDTO(SupportReplyDTO dto) {
+	public static List<OfertaEntity> fromDTO(MessageWrapperDTO dto) {
 		
 		List<OfertaEntity> ent = new ArrayList<OfertaEntity>();
 		

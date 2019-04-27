@@ -59,7 +59,7 @@
 	   	   
 		   <div class="form-group">
 				<label for="Descriere">Descriere</label>
-				<textarea rows = "5" cols="1000" style="resize:none" class="form-control" placeholder="Descriere" name="descriere"></textarea>
+				<textarea rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriere"></textarea>
 		   </div>
 	   	   
 		    <!--  To:<input id = "receiver" name = "receiver" type = "text" value = ""/></br> -->

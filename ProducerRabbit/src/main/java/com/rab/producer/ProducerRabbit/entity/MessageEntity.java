@@ -117,7 +117,7 @@ public class MessageEntity {
 	public void setReceiver(User receiver) {
 		this.receiver = receiver;
 	}
-	public List<OfertaEntity> getOferta() {
+	public List<OfertaEntity> getOferte() {
 		return oferte;
 	}
 	public void setOferte(List<OfertaEntity> oferte) {

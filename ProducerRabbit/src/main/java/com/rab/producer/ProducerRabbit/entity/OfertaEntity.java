@@ -11,18 +11,18 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Oferte")
-public class OfertaEntity {
-	
+public class OfertaEntity{
+
 	@Id
 	@Column(name="Id")
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Integer id;
+
+	@Column(name="producator")
+	String producator;
 	
 	@Column(name="numepiesa")
 	String numePiesa;
-	
-	@Column(name="producator")
-	String producator;
 	
 	@Column(name="pret")
 	Integer pret;
@@ -51,14 +51,6 @@ public class OfertaEntity {
 		this.mesaj = mesaj;
 	}
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
 	public String getNumePiesa() {
 		return numePiesa;
 	}
@@ -73,6 +65,15 @@ public class OfertaEntity {
 
 	public void setProducator(String producator) {
 		this.producator = producator;
+	}
+	
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public Integer getPret() {

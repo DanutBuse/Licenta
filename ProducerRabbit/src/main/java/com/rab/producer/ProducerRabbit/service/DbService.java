@@ -142,11 +142,10 @@ public class DbService {
 
 	public void addOferte(MessageEntity m) {
 		
-		m.getOferta().forEach( o -> oferteRepo.save(o));
+		m.getOferte().forEach( o -> oferteRepo.save(o));
 	}
 
-	public CarEntity getMasinaById(Integer id) {
-		
+	public CarEntity getMasinaById(String id) {
 		return carRepo.getOne(id);
 	}
 

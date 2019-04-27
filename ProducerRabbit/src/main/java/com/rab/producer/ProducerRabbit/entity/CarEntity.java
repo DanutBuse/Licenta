@@ -2,31 +2,27 @@ package com.rab.producer.ProducerRabbit.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "Cars")
 public class CarEntity{
 
 	@Id
-	@Column(name="Id")
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	Integer id;
-
+	@Column(name="VIN")
+	@Size(max = 60)
+	String vin;
+	
 	@Column(name="marca")
 	String marca;
 	
 	@Column(name="tip")
 	String tip;
-	
-	@Column(name="VIN")
-	String vin;
 	
 	@Column(name="An")
 	Integer an;
@@ -50,14 +46,6 @@ public class CarEntity{
 		this.vin = vin;
 		this.an = an;
 		this.mesaj = message;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public String getVin() {

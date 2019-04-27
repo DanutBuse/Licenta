@@ -60,7 +60,7 @@
 		      	
 		      		<div class="column">
 		      			<h4>Nume piesa</h4>
-			    		<input autocomplete="off" class="input form-control" id="numepiesa1" name="numepiesa1" type="text" placeholder="Nume Piesa" data-items="8"/>
+			    		<input autocomplete="off" class="input form-control" id="numepiesa1" name="numepiesa1" type="text" placeholder="Nume Piesa" data-items="8" style="margin-left:3px"/>
 			    	</div>
 			    
 			    	<div class="column">
@@ -68,7 +68,7 @@
 			    		<input autocomplete="off" class="input form-control" id="producator1" name="producator1" style="margin-left:5px" type="text" placeholder="Producator" data-items="8"/>
 			    	</div>
 			    
-			    	<div class="column">
+			    	<div class="col-xs-4">
 			    		<h4>Pret</h4>
 			    		<input autocomplete="off" class="input form-control" id="pret1" name="pret1" type="text" style="margin-left:10px" placeholder="Pret" data-items="8"/>
 			    	</div>                

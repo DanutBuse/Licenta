@@ -1,15 +1,6 @@
 package com.rab.producer.ProducerRabbit.dto;
 
-import java.io.Serializable;
-
-import org.springframework.util.SerializationUtils;
-
-
-
-
-public class CarDTO implements Serializable{
-
-	private static final long serialVersionUID = 1L;
+public class CarDTO{
 
 	String marca;
 	
@@ -63,11 +54,4 @@ public class CarDTO implements Serializable{
 		this.tip = tip;
 	}
 	
-	public byte[] getBytes() {
-		return SerializationUtils.serialize(this);
-    }
-
-    public static CarDTO fromBytes(byte[] body) {
-    	return (CarDTO) SerializationUtils.deserialize(body);
-    }
 }
