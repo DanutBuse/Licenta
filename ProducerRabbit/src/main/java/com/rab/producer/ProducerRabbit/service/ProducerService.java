@@ -92,7 +92,7 @@ public class ProducerService {
 	}
 
 	public void sendMessageInfo(CarEntity car, String EXCHANGE_NAME, String ROUTING_KEY, String sender,
-								String des) {
+								String des, String idMesaj) {
 		
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -100,7 +100,7 @@ public class ProducerService {
 		prop.setHeader("sentDate", format.format(new Date()));
 		
 		CarDTO carDTO = CarMapper.toDTO(car);
-		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, "", carDTO, car.getVin(), des, sender);
+		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, idMesaj, carDTO, car.getVin(), des, sender);
 		
 		Gson gson = new Gson();
 		

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.rab.producer.ProducerRabbit.OfertaDtoMapper;
 import com.rab.producer.ProducerRabbit.constants.CookieConstants;
 import com.rab.producer.ProducerRabbit.dto.OfertaDTO;
 import com.rab.producer.ProducerRabbit.entity.MessageEntity;
@@ -199,14 +200,18 @@ public class WebController {
 		
 		String descriereSuplimentara = parameters.get("descriere");
 		
+		long numarPiese =parameters.keySet().stream()
+											.filter( o -> o.contains("numepiesa"))
+											.count();
+		
 		ArrayList<OfertaDTO> listaOferte = new ArrayList<OfertaDTO>();
-		for(int i = 1; i <= (parameters.keySet().size()-2)/3; i++) {
+		for(int i = 0; i < numarPiese; i++) {
 			
 			OfertaDTO oferta = new OfertaDTO();
 			
-			oferta.setNumePiesa(parameters.get("numepiesa" + i));
-			oferta.setPret(Integer.parseInt(parameters.get("pret" + i)));
-			oferta.setProducator(parameters.get("producator" + i));
+			oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
+			oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
+			oferta.setProducator(parameters.get("producator" + (i+1)));
 			
 			listaOferte.add(oferta);
 			
@@ -249,11 +254,14 @@ public class WebController {
 		List<MessageEntity> messages = ConsumerService.receivedMessagesCustomer(receiver);
 		
 		messages.stream().forEach( m -> m.setMasina(dbService.getMasinaById(m.getMasina().getVin())));
+		messages.stream().forEach( m -> dbService.getMessageById(m.getId()).getOferte().stream().forEach( o -> m.getOferte().add(o)));
 		
 		dbService.insertCars(messages);
 		dbService.insertMessagesCustomer(messages);
 		
-		messages.stream().forEach( m -> dbService.addOferte(m));
+		messages.stream().forEach( m -> { dbService.addOferte(m);
+										  m.setReceived(true);
+										  m.setSent(false);});
 		
 		mv.addObject("messages", dbService.messagesByReceiver(receiver));
 		
@@ -275,6 +283,8 @@ public class WebController {
 		
 		List<MessageEntity> messages = ConsumerService.receivedMessagesSupport(receiver);
 		
+		messages.stream().forEach( m -> {m.setReceived(true);
+										 m.setSent(false);});
 		dbService.insertCars(messages);
 		dbService.insertMessagesCustomer(messages);
 		
@@ -303,23 +313,77 @@ public class WebController {
 	}
 	
 	@RequestMapping(value = "/sendReplyFromSupport" , method = RequestMethod.POST)
-	public ModelAndView supportReply(HttpServletRequest request, @RequestParam Map<String, String> parameters) {
-		
-		ModelAndView mv = new ModelAndView("sentMessages");
+	public String supportReply(HttpServletRequest request, @RequestParam Map<String, String> parameters) {
 		
 		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
 		
 		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
-			return new ModelAndView("login");
+			return "redirect:menu";
 		
 		String descriereAditionala = parameters.get("descriereAditionala");
-		String mesajId = parameters.get("mesajId");
+		String mesajId = parameters.get("mesajID");
 		
-		User loggedUser = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+		long numarPiese =parameters.keySet().stream()
+						   					.filter( o -> o.contains("numepiesa"))
+						   					.count();
 		
-		mv.addObject("messages",dbService.sentMessagesBy(loggedUser));
+		ArrayList<OfertaDTO> listaOferteSuplimentare = new ArrayList<OfertaDTO>();
 		
-		return mv;
+		if(!(parameters.get("numepiesa1").equals("") || parameters.get("producator1").equals("") || parameters.get("pret1").equals(""))) {
+			for(int i = 0; i < numarPiese; i++) {
+				
+				OfertaDTO oferta = new OfertaDTO();
+				
+				oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
+				oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
+				oferta.setProducator(parameters.get("producator" + (i+1)));
+				
+				listaOferteSuplimentare.add(oferta);
+				
+			}
+		}	
+		
+		User support = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+		String idMasina = dbService.getMessageById(Integer.parseInt(mesajId)).getMasina().getVin();
+		User customer = dbService.getMessageById(Integer.parseInt(mesajId)).getSender();
+		String descriereVeche = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
+		
+		
+		
+		ProducerService.sendMessageFromSupport(listaOferteSuplimentare, mesajId, descriereAditionala,
+				   support.getExchange().getExchangeName(),
+				   customer.getExchange().getRoutingKey(), support.getUsername(), descriereVeche,
+				   idMasina);
+		
+		return "redirect:sentMessages";
+		
+	}
+	
+	@RequestMapping(value = "/sendReplyFromCustomer" , method = RequestMethod.POST)
+	public String customerReply(HttpServletRequest request, @RequestParam Map<String, String> parameters) {
+		
+		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
+		
+		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
+			return "redirect:menu";
+		
+		String descriereAditionala = parameters.get("descriereAditionala");
+		String mesajId = parameters.get("mesajID");
+		
+		User customer = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+		User support = dbService.getMessageById(Integer.parseInt(mesajId)).getSender();
+		String descriereVeche = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
+		
+		ConsumerService.declareQueue(support.getQueue().getQueueName(), 
+				customer.getExchange().getExchangeName(),
+				 support.getExchange().getRoutingKey());
+
+		ProducerService.sendMessageInfo(dbService.getMessageById(Integer.parseInt(mesajId)).getMasina(),
+							 customer.getExchange().getExchangeName(),
+							 support.getExchange().getRoutingKey(),
+							 customer.getUsername(), descriereVeche+descriereAditionala, mesajId);
+		
+		return "redirect:sentMessages";
 		
 	}
 	

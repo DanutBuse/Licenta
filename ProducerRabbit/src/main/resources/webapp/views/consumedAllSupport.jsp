@@ -98,8 +98,8 @@
 							        <h4 class="modal-title">Informatii mesaj</h4>
 							      </div>
 							      <div class="modal-body">
-							      	<form method = "POST" action = "/ProducerRabbit/sendReplyFromSupport">
-							      	 <c:if test="${not empty message.oferte}">
+							      	<c:if test="${not empty message.oferte}">
+							      		<label for="tabel2">Oferte deja trimise</label>
 								       	<table class ="table table-striped table-bordered" id="tabel2">
 											<thead class="thead-dark">
 												<tr>
@@ -122,7 +122,11 @@
 											</tbody>		
 										</table>	
 							    	</c:if>
-							    	  
+							    	<c:if test="${not empty message.descriere}">
+								    	<label for="DescriereInitiala">Descriere Initiala</label>
+								    	<textarea readonly name='descriereInitiala' rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control">${message.descriere}</textarea>
+							    	</c:if>
+							      	<form method = "POST" action = "/ProducerRabbit/sendReplyFromSupport">
 							    	  
 								      <label for="Descriere">Descriere Aditionala</label>
 									  <textarea rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriereAditionala"></textarea>
@@ -148,7 +152,7 @@
 								                 
 									  </div>
 									  <br>
-									   <input type="hidden" id="mesID" name="mesajID" value="${message.id}">
+									  <input type="hidden" id="mesID" name="mesajID" value="${message.id}">
 								      <button type="submit" class="btn btn-danger" style="margin-top:10px">Reply</button>
 							      	</form>
 							      </div>

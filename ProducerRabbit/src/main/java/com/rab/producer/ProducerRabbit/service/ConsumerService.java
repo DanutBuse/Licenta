@@ -250,6 +250,8 @@ public class ConsumerService {
 	        
 			currentMessage.setReceivedDate(x);
 			
+			if(!mesaj.getIdMesaj().equals(""))
+				currentMessage.setId( Integer.parseInt(mesaj.getIdMesaj()));
 				
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block

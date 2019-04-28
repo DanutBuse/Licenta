@@ -23,4 +23,8 @@ public class OfertaDtoMapper {
 	public static OfertaEntity fromDTO(OfertaDTO dto) {
 		return new OfertaEntity(dto.getNumePiesa(), dto.getProducator(), dto.getPret(), null);
 	}
+	
+	public static OfertaDTO toDTO(OfertaEntity ent) {
+		return new OfertaDTO(ent.getNumePiesa(), ent.getProducator(), ent.getPret());
+	}
 }
