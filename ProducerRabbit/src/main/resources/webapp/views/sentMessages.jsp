@@ -55,7 +55,6 @@
 					<th onclick="sortTable(5)">An</th>
 					<th onclick="sortTable(6)">Descriere</th>
 					<th onclick="sortTable(7)">Sent Date</th>
-					<th onclick="sortTable(8)">Delete</th>
 				</tr>	
 			</thead>		
 		    <tbody class="table-hover">
@@ -69,7 +68,7 @@
 						<td>${message.masina.an}</td>
 						<td>${message.descriere}</td>	
 						<td>${message.sentDate}
-						<td><a href="/ProducerRabbit/delete/sent/message/${message.id}/"><span class="glyphicon glyphicon-trash"></span></a></td>	
+						
 					</tr>
 				</c:forEach>
 			</tbody>

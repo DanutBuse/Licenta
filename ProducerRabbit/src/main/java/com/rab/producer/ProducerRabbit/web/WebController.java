@@ -263,7 +263,7 @@ public class WebController {
 										  m.setReceived(true);
 										  m.setSent(false);});
 		
-		mv.addObject("messages", dbService.messagesByReceiver(receiver));
+		mv.addObject("messages", dbService.messagesByReceiver(receiver).stream().filter( m -> m.isReceived()).toArray());
 		
 		return mv;
 		
@@ -288,7 +288,7 @@ public class WebController {
 		dbService.insertCars(messages);
 		dbService.insertMessagesCustomer(messages);
 		
-		mv.addObject("messages", dbService.messagesByReceiver(receiver));
+		mv.addObject("messages", dbService.messagesByReceiver(receiver).stream().filter( m -> m.isReceived()).toArray());
 		
 		return mv;
 		
@@ -322,6 +322,11 @@ public class WebController {
 		
 		String descriereAditionala = parameters.get("descriereAditionala");
 		String mesajId = parameters.get("mesajID");
+		
+		MessageEntity mes = dbService.getMessageById(Integer.parseInt(mesajId));
+		mes.setSent(true);
+		mes.setReceived(false);
+		dbService.insertMessage(mes);
 		
 		long numarPiese =parameters.keySet().stream()
 						   					.filter( o -> o.contains("numepiesa"))
@@ -369,6 +374,11 @@ public class WebController {
 		
 		String descriereAditionala = parameters.get("descriereAditionala");
 		String mesajId = parameters.get("mesajID");
+		
+		MessageEntity mes = dbService.getMessageById(Integer.parseInt(mesajId));
+		mes.setSent(true);
+		mes.setReceived(false);
+		dbService.insertMessage(mes);
 		
 		User customer = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		User support = dbService.getMessageById(Integer.parseInt(mesajId)).getSender();

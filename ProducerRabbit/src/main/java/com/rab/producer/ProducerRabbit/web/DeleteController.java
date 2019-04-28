@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.rab.producer.ProducerRabbit.constants.CookieConstants;
 import com.rab.producer.ProducerRabbit.constants.WebConstants;
+import com.rab.producer.ProducerRabbit.entity.User;
 import com.rab.producer.ProducerRabbit.service.CookieService;
 import com.rab.producer.ProducerRabbit.service.DbService;
 
@@ -38,8 +39,13 @@ public class DeleteController {
 			dbService.deleteMessage(id);
 			
 			try {
-			
-				response.sendRedirect(request.getContextPath()+"/sentMessages");
+				User user = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+				
+				if(user.getTipUtilizator().equals("support"))
+					response.sendRedirect(request.getContextPath()+"/consumeAllSupport");
+				else
+					response.sendRedirect(request.getContextPath()+"/consumeAllCustomer");
+				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

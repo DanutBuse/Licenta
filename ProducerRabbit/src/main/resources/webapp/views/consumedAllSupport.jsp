@@ -71,6 +71,7 @@
 					<th onclick="sortTable(7)">Descriere</th>
 					<th onclick="sortTable(8)">Received Date</th>
 					<th>Info</th>
+					<th>Delete</th>
 				</tr>
 			</thead>		
 			
@@ -163,7 +164,8 @@
 							
 							  </div>
 							</div>
-						</td>	
+						</td>
+						<td><a href="/ProducerRabbit/delete/sent/message/${message.id}/"><span class="glyphicon glyphicon-trash"></span></a></td>		
 					</tr>
 		
 					
