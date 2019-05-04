@@ -259,6 +259,7 @@ public class WebController {
 		dbService.insertCars(messages);
 		dbService.insertMessagesCustomer(messages);
 		
+		//verificat!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		messages.stream().forEach( m -> { dbService.addOferte(m);
 										  m.setReceived(true);
 										  m.setSent(false);});
@@ -328,9 +329,9 @@ public class WebController {
 		mes.setReceived(false);
 		dbService.insertMessage(mes);
 		
-		long numarPiese =parameters.keySet().stream()
-						   					.filter( o -> o.contains("numepiesa"))
-						   					.count();
+		long numarPiese = parameters.keySet().stream()
+						   					 .filter( o -> o.contains("numepiesa"))
+						   					 .count();
 		
 		ArrayList<OfertaDTO> listaOferteSuplimentare = new ArrayList<OfertaDTO>();
 		
@@ -385,14 +386,14 @@ public class WebController {
 		String descriereVeche = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
 		
 		ConsumerService.declareQueue(support.getQueue().getQueueName(), 
-				customer.getExchange().getExchangeName(),
-				 support.getExchange().getRoutingKey());
+									 customer.getExchange().getExchangeName(),
+									 support.getExchange().getRoutingKey());
 
 		ProducerService.sendMessageInfo(dbService.getMessageById(Integer.parseInt(mesajId)).getMasina(),
-							 customer.getExchange().getExchangeName(),
-							 support.getExchange().getRoutingKey(),
-							 customer.getUsername(), descriereVeche+descriereAditionala, mesajId);
-		
+										 customer.getExchange().getExchangeName(),
+										 support.getExchange().getRoutingKey(),
+										 customer.getUsername(), descriereVeche+descriereAditionala, mesajId);
+				
 		return "redirect:sentMessages";
 		
 	}
