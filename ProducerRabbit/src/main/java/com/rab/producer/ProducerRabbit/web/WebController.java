@@ -200,7 +200,7 @@ public class WebController {
 		
 		String descriereSuplimentara = parameters.get("descriere");
 		
-		long numarPiese =parameters.keySet().stream()
+		long numarPiese = parameters.keySet().stream()
 											.filter( o -> o.contains("numepiesa"))
 											.count();
 		
@@ -208,11 +208,16 @@ public class WebController {
 		for(int i = 0; i < numarPiese; i++) {
 			
 			OfertaDTO oferta = new OfertaDTO();
-			
-			oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
-			oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
-			oferta.setProducator(parameters.get("producator" + (i+1)));
-			
+			if(parameters.get("numepiesa" + (i+1)).isEmpty() || parameters.get("pret" + (i+1)).isEmpty()
+					|| parameters.get("producator" + (i+1)).isEmpty()) {
+				
+				continue;
+				
+			}else {
+				oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
+				oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
+				oferta.setProducator(parameters.get("producator" + (i+1)));
+			}
 			listaOferte.add(oferta);
 			
 		}
@@ -253,16 +258,16 @@ public class WebController {
 		
 		List<MessageEntity> messages = ConsumerService.receivedMessagesCustomer(receiver);
 		
-		messages.stream().forEach( m -> m.setMasina(dbService.getMasinaById(m.getMasina().getVin())));
-		messages.stream().forEach( m -> dbService.getMessageById(m.getId()).getOferte().stream().forEach( o -> m.getOferte().add(o)));
+		messages.stream().forEach( m -> {
+									m.setMasina(dbService.getMasinaById(m.getMasina().getVin()));
+									dbService.getMessageById(m.getId()).getOferte().stream().forEach( o -> m.getOferte().add(o));
+									dbService.addOferte(m);
+									m.setReceived(true);
+									m.setSent(false);
+								  });
 		
-		dbService.insertCars(messages);
-		dbService.insertMessagesCustomer(messages);
-		
-		//verificat!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		messages.stream().forEach( m -> { dbService.addOferte(m);
-										  m.setReceived(true);
-										  m.setSent(false);});
+		dbService.insertOrUpdateCars(messages);
+		dbService.updateMessages(messages);
 		
 		mv.addObject("messages", dbService.messagesByReceiver(receiver).stream().filter( m -> m.isReceived()).toArray());
 		
@@ -286,8 +291,9 @@ public class WebController {
 		
 		messages.stream().forEach( m -> {m.setReceived(true);
 										 m.setSent(false);});
-		dbService.insertCars(messages);
-		dbService.insertMessagesCustomer(messages);
+		
+		dbService.insertOrUpdateCars(messages);
+		dbService.updateMessages(messages);
 		
 		mv.addObject("messages", dbService.messagesByReceiver(receiver).stream().filter( m -> m.isReceived()).toArray());
 		
@@ -307,7 +313,7 @@ public class WebController {
 		
 		User loggedUser = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		
-		mv.addObject("messages",dbService.sentMessagesBy(loggedUser));
+		mv.addObject("messages",dbService.sentMessagesBy(loggedUser).stream().filter( m -> m.isReceived()).toArray());
 		
 		return mv;
 		
@@ -327,6 +333,11 @@ public class WebController {
 		MessageEntity mes = dbService.getMessageById(Integer.parseInt(mesajId));
 		mes.setSent(true);
 		mes.setReceived(false);
+		
+		User customer = mes.getSender();
+		mes.setSender(mes.getReceiver());
+		mes.setReceiver(customer);
+		
 		dbService.insertMessage(mes);
 		
 		long numarPiese = parameters.keySet().stream()
@@ -335,23 +346,25 @@ public class WebController {
 		
 		ArrayList<OfertaDTO> listaOferteSuplimentare = new ArrayList<OfertaDTO>();
 		
-		if(!(parameters.get("numepiesa1").equals("") || parameters.get("producator1").equals("") || parameters.get("pret1").equals(""))) {
 			for(int i = 0; i < numarPiese; i++) {
-				
-				OfertaDTO oferta = new OfertaDTO();
-				
-				oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
-				oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
-				oferta.setProducator(parameters.get("producator" + (i+1)));
-				
-				listaOferteSuplimentare.add(oferta);
-				
+				if(parameters.get("numepiesa" + (i+1)).isEmpty() || parameters.get("pret" + (i+1)).isEmpty()
+						|| parameters.get("producator" + (i+1)).isEmpty()) {
+					
+					continue;
+				}else {
+					OfertaDTO oferta = new OfertaDTO();
+					
+					oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
+					oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
+					oferta.setProducator(parameters.get("producator" + (i+1)));
+					listaOferteSuplimentare.add(oferta);
+				}
+			
 			}
-		}	
+		
 		
 		User support = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		String idMasina = dbService.getMessageById(Integer.parseInt(mesajId)).getMasina().getVin();
-		User customer = dbService.getMessageById(Integer.parseInt(mesajId)).getSender();
 		String descriereVeche = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
 		
 		
@@ -379,10 +392,14 @@ public class WebController {
 		MessageEntity mes = dbService.getMessageById(Integer.parseInt(mesajId));
 		mes.setSent(true);
 		mes.setReceived(false);
+		
+		User support = mes.getSender();
+		mes.setSender(mes.getReceiver());
+		mes.setReceiver(support);
+		
 		dbService.insertMessage(mes);
 		
 		User customer = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
-		User support = dbService.getMessageById(Integer.parseInt(mesajId)).getSender();
 		String descriereVeche = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
 		
 		ConsumerService.declareQueue(support.getQueue().getQueueName(), 

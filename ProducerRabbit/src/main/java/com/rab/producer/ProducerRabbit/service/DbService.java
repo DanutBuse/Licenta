@@ -101,7 +101,7 @@ public class DbService {
 		
 	}
 
-	public void insertMessagesCustomer(List<MessageEntity> messages) {
+	public void updateMessages(List<MessageEntity> messages) {
 
 		messages.stream().forEach( (mes) -> {  
 			mes.setSender(this.getUserByName(mes.getSender().getUsername()));
@@ -127,11 +127,13 @@ public class DbService {
 		return messageRepo.getSentMessagesBy(loggedUser);
 	}
 
-	public void insertCars(List<MessageEntity> messages) {
+	public void insertOrUpdateCars(List<MessageEntity> messages) {
 		
 		messages.stream().forEach( (mes) -> {
 			mes.getMasina().setClient(this.getUserByName(mes.getMasina().getClient().getUsername()));
-			this.insertCar(mes.getMasina()); 
+			
+			if(!this.masinaExists(mes.getMasina())) 
+				this.insertCar(mes.getMasina()); 
     	});
 		
 	}
@@ -149,5 +151,7 @@ public class DbService {
 		return carRepo.getOne(id);
 	}
 
-	
+	public boolean masinaExists(CarEntity car) {
+		return carRepo.existsById(car.getVin());
+	}
 }
