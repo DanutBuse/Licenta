@@ -9,7 +9,7 @@
 <body>
 	<!--  <%@include file="navbar.jsp" %>-->
 	<h1>From ${message.sender.username} Received ${message.data}</h1>
-	<form method = "GET" action = "/ProducerRabbit/menu">
+	<form method = "GET" action = "/AutoClinique/menu">
 	    <input type = "submit" value = "Back to menu"/>
     </form>
 </body>

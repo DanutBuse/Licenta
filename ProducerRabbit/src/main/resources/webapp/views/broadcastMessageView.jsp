@@ -38,20 +38,40 @@
 			   </ul>	
 			 
 		</nav>
+		
+		<ul class="nav nav-tabs">
+		  <li class="nav-item">
+		    <a class="nav-link" href="/AutoClinique/menu">Send Offer</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="activeNav" href="/AutoClinique/broadcast">BroadCast message</a>
+		  </li>
+		</ul>
+		
 	<div class="center-text">
-		<h3>Complete to reply</h3>
-    	<form method = "POST" action = "/AutoClinique/sendMessageSupport">
+		<h3>Complete offers to broadcast:</h3>
+    	<form method = "POST" action = "/AutoClinique/broadcastOffers">
 
-    		<div class="col-lg-4 col-lg-offset-4">
-	       		<div class="form-group">
-					<label for="messageId">ID</label>
-					<input type = "text" class="form-control" placeholder="Id Message" name="idMesaj" style="margin-left:80px;width:200px">
-		   		</div>
-	   	   
-		   		<div class="form-group">
-					<label for="Descriere">Descriere</label>
-					<textarea rows = "5" cols="1000" style="resize:none" class="form-control" placeholder="Descriere" name="descriere"></textarea>
-		   		</div>
+	    	   <div class="col-lg-4 col-lg-offset-4">
+		   	   		<div class="form-group">
+					<label for="marca">Brand</label>
+					<input type = "text" class="form-control" placeholder="Brand" name="marca" style="width:300px;margin-left:35px">
+			   </div>
+		   	   
+		   	   <div class="form-group">
+					<label for="tip">Type</label>
+					<input type = "text" class="form-control" placeholder="Type" name="tip" style="width:300px;margin-left:35px">
+			   </div>
+						 
+			   <div class="form-group">
+					<label for="an">Fabrication year</label>
+					<input type = "text" class="form-control" placeholder="Fabrication Year" name="an" style="width:100px;margin-left:125px">
+			   </div>
+		   	   
+			   <div class="form-group">
+					<label for="Descriere">Description</label>
+					<textarea rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriere"></textarea>
+			   </div>
 	   	  
 	   	  		<button id="b1" class="btn btn-success add-more" style="margin-bottom:10px" type="button">Mai adauga o oferta!</button>
 	   	 

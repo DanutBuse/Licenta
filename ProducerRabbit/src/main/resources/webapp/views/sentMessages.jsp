@@ -25,15 +25,15 @@
 		<nav class="navbar navbar-light bg-primary">  
 			 
 			    <div class="navbar-header">  
-			      <a class="navbar-brand" href="/ProducerRabbit/">About us</a>  
+			      <a class="navbar-brand" href="/AutoClinique/">About us</a>  
 			    </div>  
 			    <ul class="nav navbar-nav">  
-			      <li ><a href="/ProducerRabbit/menu">Create Message</a></li>  
-			      <li><a href="/ProducerRabbit/consumeAll">Received Messages</a></li>  
-			      <li class="active"><a href="/ProducerRabbit/sentMessages">Sent Messages</a></li>      
+			      <li ><a href="/AutoClinique/menu">Create Message</a></li>  
+			      <li><a href="/AutoClinique/consumeAll">Received Messages</a></li>  
+			      <li class="active"><a href="/AutoClinique/sentMessages">Sent Messages</a></li>      
 			    </ul>  
 				<ul class="nav navbar-nav navbar-right">
-			      <li id='2'><a href="/ProducerRabbit/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+			      <li id='2'><a href="/AutoClinique/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 			   </ul>	
 			 
 		</nav>

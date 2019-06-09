@@ -41,15 +41,15 @@
 		<nav class="navbar navbar-light bg-primary">  
 			 
 			    <div class="navbar-header">  
-			      <a class="navbar-brand" href="/ProducerRabbit/">About us</a>  
+			      <a class="navbar-brand" href="/AutoClinique/">About us</a>  
 			    </div>  
 			    <ul class="nav navbar-nav">  
-			      <li ><a href="/ProducerRabbit/menu">Create Message</a></li>  
-			      <li class="active"><a href="/ProducerRabbit/consumeAll">Received Messages</a></li>  
-			      <li><a href="/ProducerRabbit/sentMessages">Sent Messages</a></li>      
+			      <li ><a href="/AutoClinique/menu">Create Message</a></li>  
+			      <li class="active"><a href="/AutoClinique/consumeAll">Received Messages</a></li>  
+			      <li><a href="/AutoClinique/sentMessages">Sent Messages</a></li>      
 			    </ul>  
 				<ul class="nav navbar-nav navbar-right">
-			      <li id='2'><a href="/ProducerRabbit/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+			      <li id='2'><a href="/AutoClinique/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 			   </ul>	
 			 
 		</nav>
@@ -127,7 +127,7 @@
 								    	<label for="DescriereInitiala">Conversatie Curenta</label>
 								    	<textarea readonly name='descriereInitiala' rows = "8" cols="1000" style="resize:none;margin-left:8px" class="form-control">${message.conversatie}</textarea>
 							    	</c:if>
-							      	<form method = "POST" action = "/ProducerRabbit/sendReplyFromSupport">
+							      	<form method = "POST" action = "/AutoClinique/sendReplyFromSupport">
 							    	  
 								      <label for="Descriere">Trimite raspuns</label>
 									  <textarea rows = "2" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriereAditionala"></textarea>
@@ -165,7 +165,7 @@
 							  </div>
 							</div>
 						</td>
-						<td><a href="/ProducerRabbit/delete/sent/message/${message.id}/"><span class="glyphicon glyphicon-trash"></span></a></td>		
+						<td><a href="/AutoClinique/delete/sent/message/${message.id}/"><span class="glyphicon glyphicon-trash"></span></a></td>		
 					</tr>
 		
 					

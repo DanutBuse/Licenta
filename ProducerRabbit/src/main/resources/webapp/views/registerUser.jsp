@@ -20,22 +20,22 @@
 		<nav class="navbar navbar-light bg-primary">  
 			 
 			    <div class="navbar-header">  
-			      <a class="navbar-brand" href="/ProducerRabbit/">About us</a>  
+			      <a class="navbar-brand" href="/AutoClinique/">About us</a>  
 			    </div>  
 			    <ul class="nav navbar-nav">  
-			      <li><a href="/ProducerRabbit/menu">Create Message</a></li>  
-			      <li><a href="/ProducerRabbit/consumeAll">Received Messages</a></li>  
-			      <li><a href="/ProducerRabbit/sentMessages">Sent Messages</a></li>      
+			      <li><a href="/AutoClinique/menu">Create Message</a></li>  
+			      <li><a href="/AutoClinique/consumeAll">Received Messages</a></li>  
+			      <li><a href="/AutoClinique/sentMessages">Sent Messages</a></li>      
 			    </ul>  
 				<ul class="nav navbar-nav navbar-right">
-			      <li class="active"><a href="/ProducerRabbit/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-			      <li id='1'><a href="/ProducerRabbit/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+			      <li class="active"><a href="/AutoClinique/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+			      <li id='1'><a href="/AutoClinique/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 			   </ul>	
 			 
 		</nav>
 		<div class="center-text">
 		<h3>Complete fields to register</h3>
-		<form method = "POST" action = "/ProducerRabbit/register">
+		<form method = "POST" action = "/AutoClinique/register">
 		
 			 <div class="form-group">
 				<label for="Username">Username</label>
