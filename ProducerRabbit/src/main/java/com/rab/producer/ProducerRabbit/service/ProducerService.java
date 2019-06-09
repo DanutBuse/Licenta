@@ -92,7 +92,7 @@ public class ProducerService {
 	}
 
 	public void sendMessageInfo(CarEntity car, String EXCHANGE_NAME, String ROUTING_KEY, String sender,
-								String des, String idMesaj) {
+								String des, String idMesaj, String conversatie) {
 		
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -100,7 +100,7 @@ public class ProducerService {
 		prop.setHeader("sentDate", format.format(new Date()));
 		
 		CarDTO carDTO = CarMapper.toDTO(car);
-		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, idMesaj, carDTO, car.getVin(), des, sender);
+		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, idMesaj, carDTO, car.getVin(), des, sender, conversatie);
 		
 		Gson gson = new Gson();
 		
@@ -110,7 +110,7 @@ public class ProducerService {
 		
 	}
 
-	public void sendMessageInfo(String marca, String tip, String vin, String an, String oferta, String descriere,
+	public void sendMessageInfo(String marca, String tip, String vin, String an, String descriere,
 			String exchangeName, String routingKey, String sender) {
 		
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -119,7 +119,26 @@ public class ProducerService {
 		prop.setHeader("sentDate", format.format(new Date()));
 		
 		CarDTO carDTO = new CarDTO(marca,tip,vin,Integer.parseInt(an));
-		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, "", carDTO, "", descriere, sender);
+		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, "", carDTO, "", descriere, sender, "");
+		
+		Gson gson = new Gson();
+		
+		Message message = new Message(gson.toJson(mesaj).getBytes(),prop);
+		
+		amqpTemplate.send(exchangeName, routingKey, message);
+		
+	}
+	
+	public void sendMessageSupportInfo(String marca, String tip, String vin, String an, String descriere,
+			String exchangeName, String routingKey, String sender, ArrayList<OfertaDTO> listaOferte, String idMesaj) {
+		
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		MessageProperties prop = new MessageProperties();
+		prop.setHeader("sentDate", format.format(new Date()));
+		
+		CarDTO carDTO = new CarDTO(marca,tip,vin,Integer.parseInt(an));
+		MessageWrapperDTO mesaj = new MessageWrapperDTO(listaOferte, idMesaj, carDTO, vin, descriere, sender, "");
 		
 		Gson gson = new Gson();
 		
@@ -129,8 +148,8 @@ public class ProducerService {
 		
 	}
 
-	public void sendMessageFromSupport(ArrayList<OfertaDTO> listaOferte, String idMesaj, String descriereSuplimentara,
-										String exchangeName, String routingKey, String sender, String descriereVeche, String idMasina) {
+	public void sendMessageFromSupport(ArrayList<OfertaDTO> listaOferte, String idMesaj, String conversatie,
+										String exchangeName, String routingKey, String sender, String descriere, String idMasina) {
 		
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -138,7 +157,7 @@ public class ProducerService {
 		
 		prop.setHeader("sentDate", format.format(new Date()));
 		
-		MessageWrapperDTO mesaj = new MessageWrapperDTO(listaOferte, idMesaj, null, idMasina, descriereVeche + descriereSuplimentara, sender);
+		MessageWrapperDTO mesaj = new MessageWrapperDTO(listaOferte, idMesaj, null, idMasina, descriere, sender, conversatie);
 		
 		Gson gson = new Gson();
 		

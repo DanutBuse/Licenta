@@ -1,11 +1,14 @@
 package com.rab.producer.ProducerRabbit.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
@@ -31,21 +34,21 @@ public class CarEntity{
 	@JoinColumn(name="client")
 	User client;
 	
-	@OneToOne(mappedBy ="masina")
-	MessageEntity mesaj;
+	@OneToMany(mappedBy ="masina")
+	Set<MessageEntity> mesaje = new HashSet<>();
 
 	public CarEntity() {
 		
 	}
 	
-	public CarEntity(String marca, String tip, User client, String vin, Integer an, MessageEntity message) {
+	public CarEntity(String marca, String tip, User client, String vin, Integer an, Set<MessageEntity> message) {
 		super();
 		this.marca = marca;
 		this.tip = tip;
 		this.client = client;
 		this.vin = vin;
 		this.an = an;
-		this.mesaj = message;
+		this.mesaje = message;
 	}
 
 	public String getVin() {
@@ -88,9 +91,12 @@ public class CarEntity{
 		this.client = client;
 	}
 
-	public void setMessage(MessageEntity message) {
-		this.mesaj = message;
-		
+	public Set<MessageEntity> getMesaj() {
+		return mesaje;
+	}
+
+	public void setMesaj(Set<MessageEntity> mesaj) {
+		this.mesaje = mesaj;
 	}
 	
 	

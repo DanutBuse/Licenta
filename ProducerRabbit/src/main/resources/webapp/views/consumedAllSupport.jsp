@@ -59,10 +59,10 @@
 			    	<h2>No messages were received</h2>
 		</c:if>
 		<c:if test="${not empty messages}">
-		<table class ="table table-striped table-bordered" id="tabel">
+		<table class ="table table-bordered" id="tabel">
 			<thead class="thead-dark">
 				<tr>
-					<th onclick="sortTable(0)">Id</th>
+					<th onclick="sortTable(0)">Numar Tichet</th>
 					<th onclick="sortTable(1)">From</th>
 					<th onclick="sortTable(2)">Marca</th>
 					<th onclick="sortTable(3)">Tip</th>
@@ -104,7 +104,7 @@
 								       	<table class ="table table-striped table-bordered" id="tabel2">
 											<thead class="thead-dark">
 												<tr>
-													<th onclick="sortTable(0)">Id</th>
+													<th onclick="sortTable(0)">Cod</th>
 													<th onclick="sortTable(1)">Producator</th>
 													<th onclick="sortTable(2)">Nume Piesa</th>
 													<th onclick="sortTable(3)">Pret</th>
@@ -123,14 +123,14 @@
 											</tbody>		
 										</table>	
 							    	</c:if>
-							    	<c:if test="${not empty message.descriere}">
-								    	<label for="DescriereInitiala">Descriere Initiala</label>
-								    	<textarea readonly name='descriereInitiala' rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control">${message.descriere}</textarea>
+							    	<c:if test="${not empty message.conversatie}">
+								    	<label for="DescriereInitiala">Conversatie Curenta</label>
+								    	<textarea readonly name='descriereInitiala' rows = "8" cols="1000" style="resize:none;margin-left:8px" class="form-control">${message.conversatie}</textarea>
 							    	</c:if>
 							      	<form method = "POST" action = "/ProducerRabbit/sendReplyFromSupport">
 							    	  
-								      <label for="Descriere">Descriere Aditionala</label>
-									  <textarea rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriereAditionala"></textarea>
+								      <label for="Descriere">Trimite raspuns</label>
+									  <textarea rows = "2" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriereAditionala"></textarea>
 								      
 								      <button id="b1" class="btn btn-success add-more" style="margin-bottom:10px;margin-top:10px" type="button">Mai adauga o oferta!</button>
 								      <div class="row" id="multifield1">

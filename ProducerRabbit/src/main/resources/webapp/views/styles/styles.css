@@ -62,7 +62,14 @@ th {
   color: white;
   cursor: pointer;
 }
+tr:nth-child(even){background-color: #f2f2f2}
+tr:nth-child(odd){background-color: #ffffff}
+
 .column {
   float: left;
   width: 33.33%;
+}
+
+.activeNav {
+   background-color: #d3d9e5;
 }

@@ -154,4 +154,8 @@ public class DbService {
 	public boolean masinaExists(CarEntity car) {
 		return carRepo.existsById(car.getVin());
 	}
+
+	public List<CarEntity> getCarsByTypeYear(String marca, String tip, String an) {
+		return carRepo.getCarsByTypeYear(marca, tip, Integer.parseInt(an));
+	}
 }

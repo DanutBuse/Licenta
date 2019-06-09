@@ -33,6 +33,15 @@
 							  });
 								
 							});
+						
+						$('input[type="checkbox"]').each(function(el) {
+						    var hidden = $('<input type="hidden" />');
+						    hidden.name = el.name;
+						    el.after(hidden);
+						    el.on("change", function(el) {
+						       hidden.value = el.checked ? "true" : "false";
+						    });
+						});
 		</script> 
 </head>
 <body>
@@ -62,7 +71,7 @@
 		<table class ="table table-striped table-bordered" id="tabel">
 			<thead class="thead-dark">
 				<tr>
-					<th onclick="sortTable(0)">Id</th>
+					<th onclick="sortTable(0)">Numar Tichet</th>
 					<th onclick="sortTable(1)">From</th>
 					<th onclick="sortTable(2)">Marca</th>
 					<th onclick="sortTable(3)">Tip</th>
@@ -101,10 +110,10 @@
 							      	<form method = "POST" action = "/ProducerRabbit/sendReplyFromCustomer">
 							      	 <c:if test="${not empty message.oferte}">
 							      	 	<label for="tabel2">Oferte primite</label>
-								       	<table class ="table table-striped table-bordered" id="tabel2">
+								       	<table class ="table table-bordered" id="tabel2">
 											<thead class="thead-dark">
 												<tr>
-													<th onclick="sortTable(0)">Id</th>
+													<th onclick="sortTable(0)">Cod</th>
 													<th onclick="sortTable(1)">Producator</th>
 													<th onclick="sortTable(2)">Nume Piesa</th>
 													<th onclick="sortTable(3)">Pret</th>
@@ -121,7 +130,7 @@
 														<td>${oferta.pret}</td>
 													    <td>
 													    	  <div class="form-check">
-															    <input type="checkbox" class="form-check-input" id="oferta${oferta.id}" name="oferta${oferta.id}">
+															    <input type="checkbox" class="form-check-input" id="comandat${oferta.id}" name="comandat${oferta.id}">
 															  </div>
 														</td>
 													</tr>
@@ -131,13 +140,13 @@
 							    	</c:if>
 							    	  <input type="hidden" id="mesID" name="mesajID" value="${message.id}">
 							    	  
-								      <c:if test="${not empty message.descriere}">
-								    	<label for="DescriereInitiala">Descriere Initiala</label>
-								    	<textarea readonly name='descriereInitiala' rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control">${message.descriere}</textarea>
+								      <c:if test="${not empty message.conversatie}">
+								    	<label for="DescriereInitiala">Conversatie curenta</label>
+								    	<textarea readonly name='descriereInitiala' rows = "8" cols="1000" style="resize:none;margin-left:8px" class="form-control">${message.conversatie}</textarea>
 							    	  </c:if>
 							    	  
-								      <label for="Descriere">Descriere Aditionala</label>
-									  <textarea rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriereAditionala"></textarea>
+								      <label for="Descriere">Trimite raspuns</label>
+									  <textarea rows = "2" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriereAditionala"></textarea>
 								      
 								      <button type="submit" class="btn btn-danger" style="margin-top:10px">Reply</button>
 							      	</form>

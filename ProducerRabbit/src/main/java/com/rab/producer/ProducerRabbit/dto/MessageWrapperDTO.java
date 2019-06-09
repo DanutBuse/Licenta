@@ -11,18 +11,28 @@ public class MessageWrapperDTO{
 	private CarDTO car;
 	private String descriere;
 	private String senderName;
+	private String conversatie;
 	
 	public MessageWrapperDTO(ArrayList<OfertaDTO> listaOferte, String idMesaj,CarDTO car,
-							String idCar, String descriereCurenta, String senderName) {
+							String idCar, String descriereCurenta, String senderName, String conversatie) {
 		super();
 		this.listaOferte = listaOferte;
 		this.idMesaj = idMesaj;
 		this.idCar = idCar;
 		this.car = car;
 		this.descriere = descriereCurenta;
+		this.conversatie = conversatie;
 		this.senderName = senderName;
 	}
 	
+	public String getConversatie() {
+		return conversatie;
+	}
+
+	public void setConversatie(String conversatie) {
+		this.conversatie = conversatie;
+	}
+
 	public String getIdCar() {
 		return idCar;
 	}

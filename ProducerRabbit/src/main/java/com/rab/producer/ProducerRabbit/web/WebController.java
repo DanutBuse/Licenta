@@ -1,8 +1,11 @@
 package com.rab.producer.ProducerRabbit.web;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,16 +17,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.rab.producer.ProducerRabbit.OfertaDtoMapper;
 import com.rab.producer.ProducerRabbit.constants.CookieConstants;
 import com.rab.producer.ProducerRabbit.dto.OfertaDTO;
+import com.rab.producer.ProducerRabbit.entity.CarEntity;
 import com.rab.producer.ProducerRabbit.entity.MessageEntity;
-import com.rab.producer.ProducerRabbit.entity.OfertaEntity;
 import com.rab.producer.ProducerRabbit.entity.User;
 import com.rab.producer.ProducerRabbit.service.ConsumerService;
 import com.rab.producer.ProducerRabbit.service.CookieService;
 import com.rab.producer.ProducerRabbit.service.DbService;
 import com.rab.producer.ProducerRabbit.service.ProducerService;
+import com.rab.producer.ProducerRabbit.utils.DateParsers;
 
 @Controller
 public class WebController {
@@ -166,7 +169,6 @@ public class WebController {
 		User sender = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		
 		List<String> queues = dbService.getSuportsQueues();
-		
 		String lowestMessagesQueue = ProducerService.getLowestNumberMessagesQueue(queues);
 		
 		User receiver = dbService.getUserByQueueName(lowestMessagesQueue);
@@ -175,7 +177,7 @@ public class WebController {
 									 sender.getExchange().getExchangeName(),
 									 receiver.getExchange().getRoutingKey());
 		
-		ProducerService.sendMessageInfo(marca, tip, vin, an, "", descriere,
+		ProducerService.sendMessageInfo(marca, tip, vin, an, descriere,
 										 sender.getExchange().getExchangeName(),
 								   		 receiver.getExchange().getRoutingKey(),
 								   		 sender.getUsername());
@@ -260,7 +262,8 @@ public class WebController {
 		
 		messages.stream().forEach( m -> {
 									m.setMasina(dbService.getMasinaById(m.getMasina().getVin()));
-									dbService.getMessageById(m.getId()).getOferte().stream().forEach( o -> m.getOferte().add(o));
+									if(m.getId() != -1)
+										dbService.getMessageById(m.getId()).getOferte().stream().forEach( o -> m.getOferte().add(o));
 									dbService.addOferte(m);
 									m.setReceived(true);
 									m.setSent(false);
@@ -327,7 +330,7 @@ public class WebController {
 		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
 			return "redirect:menu";
 		
-		String descriereAditionala = parameters.get("descriereAditionala");
+		
 		String mesajId = parameters.get("mesajID");
 		
 		MessageEntity mes = dbService.getMessageById(Integer.parseInt(mesajId));
@@ -335,6 +338,10 @@ public class WebController {
 		mes.setReceived(false);
 		
 		User customer = mes.getSender();
+		String raspuns = "Sent Date: "+DateParsers.formatDate(new Date()) 
+									+"    From:"+customer.getUsername()
+									+"    Message:"+parameters.get("descriereAditionala")+"\n";
+		
 		mes.setSender(mes.getReceiver());
 		mes.setReceiver(customer);
 		
@@ -365,13 +372,13 @@ public class WebController {
 		
 		User support = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		String idMasina = dbService.getMessageById(Integer.parseInt(mesajId)).getMasina().getVin();
-		String descriereVeche = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
+		String descriere = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
+		String conversatie = dbService.getMessageById(Integer.parseInt(mesajId)).getConversatie()+raspuns;
 		
 		
-		
-		ProducerService.sendMessageFromSupport(listaOferteSuplimentare, mesajId, descriereAditionala,
+		ProducerService.sendMessageFromSupport(listaOferteSuplimentare, mesajId, conversatie,
 				   support.getExchange().getExchangeName(),
-				   customer.getExchange().getRoutingKey(), support.getUsername(), descriereVeche,
+				   customer.getExchange().getRoutingKey(), support.getUsername(), descriere,
 				   idMasina);
 		
 		return "redirect:sentMessages";
@@ -386,7 +393,21 @@ public class WebController {
 		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
 			return "redirect:menu";
 		
-		String descriereAditionala = parameters.get("descriereAditionala");
+		Map<String, String> pieseComandate = new HashMap<String, String>();
+		
+		parameters.keySet().stream()
+						 .filter( o -> o.contains("comandat"))
+						 .map(o -> pieseComandate.put(o, parameters.get(o)));
+		
+		String comanda = "";
+		for(Entry ent : pieseComandate.entrySet()) {
+			if(ent.getValue().equals("true")) {
+				comanda = comanda + "**COMANDAT** Oferta numarul:" + ent.getKey().toString() + "\n";
+			}
+			else
+				continue;
+		}
+		
 		String mesajId = parameters.get("mesajID");
 		
 		MessageEntity mes = dbService.getMessageById(Integer.parseInt(mesajId));
@@ -394,13 +415,18 @@ public class WebController {
 		mes.setReceived(false);
 		
 		User support = mes.getSender();
+		String raspuns = "Sent Date: " + DateParsers.formatDate(new Date()) 
+									+"    From:" + support.getUsername()
+									+"    Message:" + comanda + parameters.get("descriereAditionala") + "\n";
+		
 		mes.setSender(mes.getReceiver());
 		mes.setReceiver(support);
 		
 		dbService.insertMessage(mes);
 		
 		User customer = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
-		String descriereVeche = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
+		String descriere = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
+		String conversatie = dbService.getMessageById(Integer.parseInt(mesajId)).getConversatie()+raspuns;
 		
 		ConsumerService.declareQueue(support.getQueue().getQueueName(), 
 									 customer.getExchange().getExchangeName(),
@@ -409,11 +435,102 @@ public class WebController {
 		ProducerService.sendMessageInfo(dbService.getMessageById(Integer.parseInt(mesajId)).getMasina(),
 										 customer.getExchange().getExchangeName(),
 										 support.getExchange().getRoutingKey(),
-										 customer.getUsername(), descriereVeche+descriereAditionala, mesajId);
+										 customer.getUsername(), descriere, mesajId, conversatie);
 				
 		return "redirect:sentMessages";
 		
 	}
+	@RequestMapping(value = "/getCustomerMessages" , method = RequestMethod.GET)
+	public ModelAndView getCustomerMessages(HttpServletRequest request, @RequestParam("customerNameInput") String customerName) {
+		
+		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
+		User support = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+
+		ModelAndView mv = new ModelAndView("supportCreateMessage");
+		
+		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
+			return new ModelAndView("login");
+		
+		List<MessageEntity> messages = ConsumerService.receivedMessagesSupport(support);
+		
+		messages.stream().forEach( m -> {m.setReceived(true);
+										 m.setSent(false);});
+		
+		dbService.insertOrUpdateCars(messages);
+		dbService.updateMessages(messages);
+		
+		return mv.addObject("messages", dbService.messagesByReceiver(support).stream()
+																	  .filter( m -> m.isReceived() && m.getSender().getUsername().equals(customerName))
+																	  .toArray());
+	}
 	
+	@RequestMapping(value = "/broadcast" , method = RequestMethod.GET)
+	public ModelAndView broadcastMessages(HttpServletRequest request) {
+		
+		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
+		User support = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+
+		ModelAndView mv = new ModelAndView("broadcastMessageView");
+		
+		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD) || !support.getTipUtilizator().equals("support"))
+			return new ModelAndView("login");
+		
+		return mv;
+		
+	}
+	
+	@RequestMapping(value = "/broadcastOffers", method = RequestMethod.POST)
+	public String sendBrodcastOffers(@RequestParam Map<String, String> parameters,
+								HttpServletRequest request){
+	
+		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
+		User support = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+		
+		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD) || !support.getTipUtilizator().equals("support"))
+			return "redirect:menu";
+				
+		String descriere = "BROADCAST:" + parameters.get("descriere");
+		String marca = parameters.get("marca");
+		String tip = parameters.get("tip");
+		String an = parameters.get("an");
+		
+		long numarPiese = parameters.keySet().stream()
+											.filter( o -> o.contains("numepiesa"))
+											.count();
+		
+		ArrayList<OfertaDTO> listaOferte = new ArrayList<OfertaDTO>();
+		for(int i = 0; i < numarPiese; i++) {
+			
+			OfertaDTO oferta = new OfertaDTO();
+			if(parameters.get("numepiesa" + (i+1)).isEmpty() || parameters.get("pret" + (i+1)).isEmpty()
+					|| parameters.get("producator" + (i+1)).isEmpty()) {
+				
+				continue;
+				
+			}else {
+				oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
+				oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
+				oferta.setProducator(parameters.get("producator" + (i+1)));
+			}
+			listaOferte.add(oferta);
+			
+		}
+		
+		List<CarEntity> carList = dbService.getCarsByTypeYear(marca, tip, an);
+		
+		carList.stream().forEach(c -> {
+			
+			ConsumerService.declareQueue(c.getClient().getQueue().getQueueName(), 
+										 support.getExchange().getExchangeName(),
+										 c.getClient().getExchange().getRoutingKey());
+
+			ProducerService.sendMessageSupportInfo(marca, tip, c.getVin(), an, descriere,
+													 support.getExchange().getExchangeName(),
+													 c.getClient().getExchange().getRoutingKey(),
+											   		 support.getUsername(), listaOferte, "");
+								});
+		
+		return "redirect:broadcast";
+	}
 }
 

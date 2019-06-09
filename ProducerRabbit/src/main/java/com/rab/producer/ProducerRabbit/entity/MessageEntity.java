@@ -25,7 +25,7 @@ public class MessageEntity {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	Integer id;
 	
-	@OneToOne
+	@ManyToOne
 	@JoinColumn(name="masina")
 	CarEntity masina;
 	
@@ -34,6 +34,9 @@ public class MessageEntity {
 	
 	@Column(name="Description")
 	String descriere;
+	
+	@Column(name="Conversation")
+	String conversatie;
 	
 	@Column(name="Sent")
 	boolean sent;
@@ -90,6 +93,12 @@ public class MessageEntity {
 		return id;
 	}
 
+	public String getConversatie() {
+		return conversatie;
+	}
+	public void setConversatie(String conversatie) {
+		this.conversatie = conversatie;
+	}
 	public void setId(Integer id) {
 		this.id = id;
 	}

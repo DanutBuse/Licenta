@@ -44,8 +44,8 @@
 
     		<div class="col-lg-4 col-lg-offset-4">
 	       		<div class="form-group">
-					<label for="messageId">Id mesaj</label>
-					<input type = "text" class="form-control" placeholder="Id Mesaj" name="idMesaj" style="margin-left:80px;width:200px">
+					<label for="messageId">ID</label>
+					<input type = "text" class="form-control" placeholder="Id Message" name="idMesaj" style="margin-left:80px;width:200px">
 		   		</div>
 	   	   
 		   		<div class="form-group">

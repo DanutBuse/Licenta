@@ -143,6 +143,7 @@ public class ConsumerService {
  	
  		currentMessage.getMasina().setVin(mesaj.getIdCar());
  		currentMessage.setDescriere(mesaj.getDescriere());
+ 		currentMessage.setConversatie(mesaj.getConversatie());
 		currentMessage.setSentDate(format.parse( String.valueOf(response.getProps().getHeaders().get("sentDate"))));
 			
 		Date date = format.parse(format.format(new Date()));  
@@ -157,7 +158,10 @@ public class ConsumerService {
 			oferte.add(ent);
 		}
 		currentMessage.setOferte(oferte);
-		currentMessage.setId( Integer.parseInt(mesaj.getIdMesaj()));
+		if(!mesaj.getIdMesaj().isEmpty())
+			currentMessage.setId( Integer.parseInt(mesaj.getIdMesaj()));
+		else
+			currentMessage.setId(-1);
 			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -242,6 +246,7 @@ public class ConsumerService {
     		car.setClient(currentMessage.getSender()); 
     		
     		currentMessage.setMasina(car);
+    		currentMessage.setConversatie(mesaj.getConversatie());
 	 		currentMessage.setDescriere(mesaj.getDescriere());
 			currentMessage.setSentDate(format.parse( String.valueOf(response.getProps().getHeaders().get("sentDate"))));
 				

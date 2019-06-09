@@ -38,13 +38,13 @@
     	
     	<div class="col-lg-4 col-lg-offset-4">
 	       <div class="form-group">
-				<label for="marca">Marca</label>
-				<input type = "text" class="form-control" placeholder="Marca" name="marca" style="width:300px;margin-left:35px">
+				<label for="marca">Brand</label>
+				<input type = "text" class="form-control" placeholder="Brand" name="marca" style="width:300px;margin-left:35px">
 		   </div>
 	   	   
 	   	   <div class="form-group">
-				<label for="tip">Tip</label>
-				<input type = "text" class="form-control" placeholder="Tip" name="tip" style="width:300px;margin-left:35px">
+				<label for="tip">Type</label>
+				<input type = "text" class="form-control" placeholder="Type" name="tip" style="width:300px;margin-left:35px">
 		   </div>
 					 
 		   <div class="form-group">
@@ -53,12 +53,12 @@
 		   </div>
 		    
 		   <div class="form-group">
-				<label for="an">An</label>
-				<input type = "text" class="form-control" placeholder="An" name="an" style="width:100px;margin-left:125px">
+				<label for="an">Fabrication year</label>
+				<input type = "text" class="form-control" placeholder="Fabrication Year" name="an" style="width:100px;margin-left:125px">
 		   </div>
 	   	   
 		   <div class="form-group">
-				<label for="Descriere">Descriere</label>
+				<label for="Descriere">Description</label>
 				<textarea rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriere"></textarea>
 		   </div>
 	   	   
