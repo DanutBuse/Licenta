@@ -13,7 +13,7 @@ import com.rab.licenta.AutoClinique.entity.User;
 import com.rab.licenta.AutoClinique.repositories.CarRepo;
 import com.rab.licenta.AutoClinique.repositories.ExchangeRepo;
 import com.rab.licenta.AutoClinique.repositories.MessageRepo;
-import com.rab.licenta.AutoClinique.repositories.OferteRepo;
+import com.rab.licenta.AutoClinique.repositories.OfferRepo;
 import com.rab.licenta.AutoClinique.repositories.QueueRepo;
 import com.rab.licenta.AutoClinique.repositories.UserRepo;
 
@@ -36,7 +36,7 @@ public class DbService {
 	CarRepo carRepo;
 	
 	@Autowired
-	OferteRepo oferteRepo;
+	OfferRepo oferteRepo;
 	
 	public DbService() {
 		
@@ -75,8 +75,10 @@ public class DbService {
 		userRepo.save(u);
 	}
 	
-	public boolean check(User user, String pass) {
-		return user.getPassword().equals(pass);
+	public boolean check(String userName, String pass) {
+		if(check(userName))
+			return userRepo.getByName(userName).getPassword().equals(pass);
+		return false;
 	}
 	
 	public boolean check(String userName) {
@@ -103,10 +105,10 @@ public class DbService {
 
 	public void updateMessages(List<MessageEntity> messages) {
 
-		messages.stream().forEach( (mes) -> {  
+		for(MessageEntity mes : messages) {
 			mes.setSender(this.getUserByName(mes.getSender().getUsername()));
 			this.insertMessage(mes); 
-    	});
+		}
 		
 	}
 

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.rab.licenta.AutoClinique.constants.CookieConstants;
-import com.rab.licenta.AutoClinique.dto.OfertaDTO;
+import com.rab.licenta.AutoClinique.dto.OfferDTO;
 import com.rab.licenta.AutoClinique.entity.CarEntity;
 import com.rab.licenta.AutoClinique.entity.MessageEntity;
 import com.rab.licenta.AutoClinique.entity.User;
@@ -62,10 +62,6 @@ public class WebController {
 		if(!dbService.check(userName)) {
 			dbService.insertUser(userName,pass,type,null,null);
 			
-			User registeredUser = dbService.getUserByName(userName);
-			
-			dbService.setUserQueueExchange(registeredUser);
-			
 		}
 		else
 			return new ModelAndView("registerUser");
@@ -85,27 +81,25 @@ public class WebController {
 		
 		ModelAndView mv = new ModelAndView("produceInfo");
 		
-		User user = dbService.getUserByName(userName);
-		
-		if(dbService.check(user,pass)) {
+		if(dbService.check(userName,pass)) {	
 			
-			if(user.getTipUtilizator().equals("support")) {
-				user.setAvailable(true);
-				dbService.insertUser(user);
-			}
-			
-			ConsumerService.declareQueue(user.getQueue().getQueueName(),
-					 user.getExchange().getExchangeName(),
-					 user.getExchange().getRoutingKey());
-			
+			User user = dbService.getUserByName(userName);
 			cookieService.setCookie(response, CookieConstants.LOGGED_IN_KEY, CookieConstants.LOGGED_IN_VALUE_GOOD);
 			cookieService.setCookie(response, CookieConstants.USERNAME_KEY, userName);
+			
+			
+			dbService.setUserQueueExchange(user);
+			
+			ConsumerService.declareQueue(user.getQueue().getQueueName(),
+					user.getExchange().getExchangeName(),
+					user.getExchange().getRoutingKey());
 			
 			if(user.getTipUtilizator().equals("support")) {
 				user.setAvailable(true);
 				dbService.insertUser(user);
 				return new ModelAndView("supportCreateMessage");
 			}
+			
 		}
 		else
 		{
@@ -168,7 +162,7 @@ public class WebController {
 		
 		User sender = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		
-		List<String> queues = dbService.getSuportsQueues();
+		List<String> queues = dbService.getSuportsQueues();// verificare existenta coada
 		String lowestMessagesQueue = ProducerService.getLowestNumberMessagesQueue(queues);
 		
 		User receiver = dbService.getUserByQueueName(lowestMessagesQueue);
@@ -206,25 +200,30 @@ public class WebController {
 											.filter( o -> o.contains("numepiesa"))
 											.count();
 		
-		ArrayList<OfertaDTO> listaOferte = new ArrayList<OfertaDTO>();
+		ArrayList<OfferDTO> listaOferte = new ArrayList<OfferDTO>();
 		for(int i = 0; i < numarPiese; i++) {
 			
-			OfertaDTO oferta = new OfertaDTO();
-			if(parameters.get("numepiesa" + (i+1)).isEmpty() || parameters.get("pret" + (i+1)).isEmpty()
-					|| parameters.get("producator" + (i+1)).isEmpty()) {
+			OfferDTO oferta = new OfferDTO();
+			if(parameters.get("numepiesa" + i).isEmpty() || parameters.get("pret" + i).isEmpty()
+					|| parameters.get("producator" + i).isEmpty()) {
 				
 				continue;
 				
 			}else {
-				oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
-				oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
-				oferta.setProducator(parameters.get("producator" + (i+1)));
+				oferta.setNumePiesa(parameters.get("numepiesa" + i));
+				oferta.setPret(Integer.parseInt(parameters.get("pret" + i)));
+				oferta.setProducator(parameters.get("producator" + i));
+				listaOferte.add(oferta);
 			}
-			listaOferte.add(oferta);
+			
 			
 		}
 		
 		String descriereVeche =  dbService.getMessageById(Integer.parseInt(idMesaj)).getDescriere();
+		
+		ConsumerService.declareQueue(customer.getQueue().getQueueName(), 
+									 sender.getExchange().getExchangeName(),
+									 customer.getExchange().getRoutingKey());
 		
 		ProducerService.sendMessageFromSupport(listaOferte, idMesaj, descriereSuplimentara,
 											   sender.getExchange().getExchangeName(),
@@ -247,7 +246,7 @@ public class WebController {
 	}
 	
 	@RequestMapping(value = "/consumeAllCustomer" , method = RequestMethod.GET)
-	public ModelAndView consumeAllMsg(HttpServletRequest request) {
+	public ModelAndView consumeAllMsgCustomer(HttpServletRequest request) {
 		
 		ModelAndView mv = new ModelAndView("consumedAllCustomer");
 		
@@ -258,7 +257,7 @@ public class WebController {
 		
 		User receiver = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		
-		List<MessageEntity> messages = ConsumerService.receivedMessagesCustomer(receiver);
+		List<MessageEntity> messages = ConsumerService.receivedMessages(receiver);
 		
 		messages.stream().forEach( m -> {
 									m.setMasina(dbService.getMasinaById(m.getMasina().getVin()));
@@ -290,7 +289,7 @@ public class WebController {
 		
 		User receiver = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		
-		List<MessageEntity> messages = ConsumerService.receivedMessagesSupport(receiver);
+		List<MessageEntity> messages = ConsumerService.receivedMessages(receiver);
 		
 		messages.stream().forEach( m -> {m.setReceived(true);
 										 m.setSent(false);});
@@ -351,19 +350,19 @@ public class WebController {
 						   					 .filter( o -> o.contains("numepiesa"))
 						   					 .count();
 		
-		ArrayList<OfertaDTO> listaOferteSuplimentare = new ArrayList<OfertaDTO>();
+		ArrayList<OfferDTO> listaOferteSuplimentare = new ArrayList<OfferDTO>();
 		
 			for(int i = 0; i < numarPiese; i++) {
-				if(parameters.get("numepiesa" + (i+1)).isEmpty() || parameters.get("pret" + (i+1)).isEmpty()
-						|| parameters.get("producator" + (i+1)).isEmpty()) {
+				if(parameters.get("numepiesa" + i).isEmpty() || parameters.get("pret" + i).isEmpty()
+						|| parameters.get("producator" + i).isEmpty()) {
 					
 					continue;
 				}else {
-					OfertaDTO oferta = new OfertaDTO();
+					OfferDTO oferta = new OfferDTO();
 					
-					oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
-					oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
-					oferta.setProducator(parameters.get("producator" + (i+1)));
+					oferta.setNumePiesa(parameters.get("numepiesa" + i));
+					oferta.setPret(Integer.parseInt(parameters.get("pret" + i)));
+					oferta.setProducator(parameters.get("producator" + i));
 					listaOferteSuplimentare.add(oferta);
 				}
 			
@@ -375,6 +374,9 @@ public class WebController {
 		String descriere = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
 		String conversatie = dbService.getMessageById(Integer.parseInt(mesajId)).getConversatie()+raspuns;
 		
+		ConsumerService.declareQueue(customer.getQueue().getQueueName(), 
+				 support.getExchange().getExchangeName(),
+				 customer.getExchange().getRoutingKey());
 		
 		ProducerService.sendMessageFromSupport(listaOferteSuplimentare, mesajId, conversatie,
 				   support.getExchange().getExchangeName(),
@@ -397,12 +399,12 @@ public class WebController {
 		
 		parameters.keySet().stream()
 						 .filter( o -> o.contains("comandat"))
-						 .map(o -> pieseComandate.put(o, parameters.get(o)));
+						 .forEach(o -> pieseComandate.put(o, parameters.get(o)));
 		
 		String comanda = "";
 		for(Entry ent : pieseComandate.entrySet()) {
-			if(ent.getValue().equals("true")) {
-				comanda = comanda + "**COMANDAT** Oferta numarul:" + ent.getKey().toString() + "\n";
+			if(ent.getValue().equals("on")) {
+				comanda = comanda + "\n\t\t\t**Ordered** Part Number:" + ent.getKey().toString().replace("comandat", "") + "\n";
 			}
 			else
 				continue;
@@ -417,7 +419,11 @@ public class WebController {
 		User support = mes.getSender();
 		String raspuns = "Sent Date: " + DateParsers.formatDate(new Date()) 
 									+"    From:" + support.getUsername()
-									+"    Message:" + comanda + parameters.get("descriereAditionala") + "\n";
+									+"    Message:" + comanda;
+		
+	    raspuns = raspuns + "Sent Date: " + DateParsers.formatDate(new Date()) 
+						+"    From:" + support.getUsername()
+						+"    Message:" + parameters.get("descriereAditionala") + "\n";
 		
 		mes.setSender(mes.getReceiver());
 		mes.setReceiver(support);
@@ -451,7 +457,7 @@ public class WebController {
 		if(!loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
 			return new ModelAndView("login");
 		
-		List<MessageEntity> messages = ConsumerService.receivedMessagesSupport(support);
+		List<MessageEntity> messages = ConsumerService.receivedMessages(support);
 		
 		messages.stream().forEach( m -> {m.setReceived(true);
 										 m.setSent(false);});
@@ -498,21 +504,22 @@ public class WebController {
 											.filter( o -> o.contains("numepiesa"))
 											.count();
 		
-		ArrayList<OfertaDTO> listaOferte = new ArrayList<OfertaDTO>();
+		ArrayList<OfferDTO> listaOferte = new ArrayList<OfferDTO>();
 		for(int i = 0; i < numarPiese; i++) {
 			
-			OfertaDTO oferta = new OfertaDTO();
-			if(parameters.get("numepiesa" + (i+1)).isEmpty() || parameters.get("pret" + (i+1)).isEmpty()
-					|| parameters.get("producator" + (i+1)).isEmpty()) {
+			OfferDTO oferta = new OfferDTO();
+			if(parameters.get("numepiesa" + i).isEmpty() || parameters.get("pret" + i).isEmpty()
+					|| parameters.get("producator" + i).isEmpty()) {
 				
 				continue;
 				
 			}else {
-				oferta.setNumePiesa(parameters.get("numepiesa" + (i+1)));
-				oferta.setPret(Integer.parseInt(parameters.get("pret" + (i+1))));
-				oferta.setProducator(parameters.get("producator" + (i+1)));
+				oferta.setNumePiesa(parameters.get("numepiesa" + i));
+				oferta.setPret(Integer.parseInt(parameters.get("pret" + i)));
+				oferta.setProducator(parameters.get("producator" + i));
+				listaOferte.add(oferta);
 			}
-			listaOferte.add(oferta);
+			
 			
 		}
 		

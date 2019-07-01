@@ -13,6 +13,48 @@
 	<%@include file="styles/styles.css" %>
 </style>
 
+<script> 
+function validate()                                    
+{ 
+    var name = document.forms["RegForm"]["username"];      
+    var password = document.forms["RegForm"]["pass"];
+    
+    if (name.value == "")                                  
+    { 
+    	if (document.getElementById("userNamee") !=null) {
+    		document.getElementById("userNamee").remove();
+    	}
+    	
+        name.className = "form-control is-invalid";
+        $('[name="username"]').before("<small id='userNamee'>Empty Username field</small>");
+        name.focus(); 
+        return false; 
+        
+    } else{ 
+        name.className = "form-control is-valid";
+        name.focus();  
+    } 
+   
+    if (password.value.length < 6)                                  
+    { 
+    	if (document.getElementById("passs") !=null) {
+    		document.getElementById("passs").remove();
+    	}
+    	
+    	password.className = "form-control is-invalid";
+        $('[name="pass"]').before("<small id='passs'>Password less than 6 characters</small>");
+        password.focus(); 
+        return false; 
+        
+    } else{ 
+    	password.className = "form-control is-valid";
+    	password.focus();  
+    }
+    
+    e.preventDefault();
+    return true; 
+}</script> 
+
 </head>
 <body>
 	<div class="container">
@@ -22,11 +64,7 @@
 			    <div class="navbar-header">  
 			      <a class="navbar-brand" href="/AutoClinique/">About us</a>  
 			    </div>  
-			    <ul class="nav navbar-nav">  
-			      <li><a href="/AutoClinique/menu">Create Message</a></li>  
-			      <li><a href="/AutoClinique/consumeAll">Received Messages</a></li>  
-			      <li><a href="/AutoClinique/sentMessages">Sent Messages</a></li>      
-			    </ul>  
+			  
 				<ul class="nav navbar-nav navbar-right">
 			      <li class="active"><a href="/AutoClinique/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
 			      <li id='1'><a href="/AutoClinique/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
@@ -35,7 +73,7 @@
 		</nav>
 		<div class="center-text">
 		<h3>Complete fields to register</h3>
-		<form method = "POST" action = "/AutoClinique/register">
+		<form method = "POST" action = "/AutoClinique/register" name = "RegForm" onsubmit="return validate()">
 		
 			 <div class="form-group">
 				<label for="Username">Username</label>

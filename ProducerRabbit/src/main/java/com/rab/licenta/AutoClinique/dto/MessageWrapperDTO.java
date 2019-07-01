@@ -5,7 +5,7 @@ import java.util.List;
 
 public class MessageWrapperDTO{
 	
-	private ArrayList<OfertaDTO> listaOferte;
+	private ArrayList<OfferDTO> listaOferte;
 	private String idMesaj;
 	private String idCar;
 	private CarDTO car;
@@ -13,7 +13,7 @@ public class MessageWrapperDTO{
 	private String senderName;
 	private String conversatie;
 	
-	public MessageWrapperDTO(ArrayList<OfertaDTO> listaOferte, String idMesaj,CarDTO car,
+	public MessageWrapperDTO(ArrayList<OfferDTO> listaOferte, String idMesaj,CarDTO car,
 							String idCar, String descriereCurenta, String senderName, String conversatie) {
 		super();
 		this.listaOferte = listaOferte;
@@ -49,7 +49,7 @@ public class MessageWrapperDTO{
 		this.senderName = senderName;
 	}
 
-	public List<OfertaDTO> getListaOferte() {
+	public List<OfferDTO> getListaOferte() {
 		return listaOferte;
 	}
 	
@@ -59,7 +59,7 @@ public class MessageWrapperDTO{
 	public void setCar(CarDTO car) {
 		this.car = car;
 	}
-	public void setListaOferte(ArrayList<OfertaDTO> listaOferte) {
+	public void setListaOferte(ArrayList<OfferDTO> listaOferte) {
 		this.listaOferte = listaOferte;
 	}
 	public String getIdMesaj() {

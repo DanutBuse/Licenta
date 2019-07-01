@@ -47,13 +47,13 @@
 		<table class ="table table-striped table-bordered" id="tabel1">
 			<thead class="thead-dark">
 				<tr>
-					<th onclick="sortTable(0)">Id</th>
+					<th onclick="sortTable(0)">Ticket Number</th>
 					<th onclick="sortTable(1)">To</th>
-					<th onclick="sortTable(2)">Marca</th>
-					<th onclick="sortTable(3)">Tip</th>
+					<th onclick="sortTable(2)">Brand</th>
+					<th onclick="sortTable(3)">Type</th>
 					<th onclick="sortTable(4)">Vin</th>
-					<th onclick="sortTable(5)">An</th>
-					<th onclick="sortTable(6)">Descriere</th>
+					<th onclick="sortTable(5)">Fabrication Year</th>
+					<th onclick="sortTable(6)">Description</th>
 					<th onclick="sortTable(7)">Sent Date</th>
 				</tr>	
 			</thead>		

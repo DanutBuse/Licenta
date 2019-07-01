@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 import com.rab.licenta.AutoClinique.CarMapper;
 import com.rab.licenta.AutoClinique.dto.CarDTO;
 import com.rab.licenta.AutoClinique.dto.MessageWrapperDTO;
-import com.rab.licenta.AutoClinique.dto.OfertaDTO;
+import com.rab.licenta.AutoClinique.dto.OfferDTO;
 import com.rab.licenta.AutoClinique.entity.CarEntity;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -95,15 +95,12 @@ public class ProducerService {
 								String des, String idMesaj, String conversatie) {
 		
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
 		MessageProperties prop = new MessageProperties();
 		prop.setHeader("sentDate", format.format(new Date()));
-		
 		CarDTO carDTO = CarMapper.toDTO(car);
 		MessageWrapperDTO mesaj = new MessageWrapperDTO(null, idMesaj, carDTO, car.getVin(), des, sender, conversatie);
 		
 		Gson gson = new Gson();
-		
 		Message message = new Message(gson.toJson(mesaj).getBytes(),prop);
 		
 		amqpTemplate.send(EXCHANGE_NAME, ROUTING_KEY, message);
@@ -130,13 +127,11 @@ public class ProducerService {
 	}
 	
 	public void sendMessageSupportInfo(String marca, String tip, String vin, String an, String descriere,
-			String exchangeName, String routingKey, String sender, ArrayList<OfertaDTO> listaOferte, String idMesaj) {
+			String exchangeName, String routingKey, String sender, ArrayList<OfferDTO> listaOferte, String idMesaj) {
 		
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
 		MessageProperties prop = new MessageProperties();
 		prop.setHeader("sentDate", format.format(new Date()));
-		
 		CarDTO carDTO = new CarDTO(marca,tip,vin,Integer.parseInt(an));
 		MessageWrapperDTO mesaj = new MessageWrapperDTO(listaOferte, idMesaj, carDTO, vin, descriere, sender, "");
 		
@@ -148,7 +143,7 @@ public class ProducerService {
 		
 	}
 
-	public void sendMessageFromSupport(ArrayList<OfertaDTO> listaOferte, String idMesaj, String conversatie,
+	public void sendMessageFromSupport(ArrayList<OfferDTO> listaOferte, String idMesaj, String conversatie,
 										String exchangeName, String routingKey, String sender, String descriere, String idMasina) {
 		
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

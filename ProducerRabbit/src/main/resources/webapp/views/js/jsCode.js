@@ -54,42 +54,57 @@ function sortTable(n) {
 	}
 
 
-$(document).ready(function(){
-    var next = 1;
-    $(".add-more").click(function(e){
-        e.preventDefault();
-        var addto = "#multifield" + next;
-        var addRemove = "#multifield" + (next);
+	function addMoreOffers(loopIndex){
+    	var next = 0;
+        var addto = "#multifield" +loopIndex+"fieldNum"+ next;
+        var addRemove = "#multifield" +loopIndex+"fieldNum"+ next;
         next = next + 1;
-        var newIn = '<div class="row" id="multifield' + next +'">' +
-        			'<div class="column"><input autocomplete="off" class="input form-control" id="numepiesa' + next + '"placeholder="Nume Piesa" name="numepiesa' + next + '" type="text" style="margin-left:3px"></div>' +
-        			'<div class="column"><input autocomplete="off" class="input form-control" style="margin-left:5px" placeholder="Producator" id="producator' + next + '" name="producator' + next + '" type="text"></div>' +
-        			'<div class="col-xs-4"><input autocomplete="off" class="input form-control" placeholder="Pret" style="margin-left:10px" id="pret' + next + '" name="pret' + next + '" type="text"></div></div>';
+        var newIn = '<div class="row" id="multifield' +loopIndex+'fieldNum'+ next +'">' +
+        			'<div class="column"><input autocomplete="off" class="input form-control" id="numepiesa' + loopIndex+'fieldNum'+ next  + '"placeholder="Part Name" name="numepiesa' + next + '" type="text" style="margin-left:3px"></div>' +
+        			'<div class="column"><input autocomplete="off" class="input form-control" style="margin-left:5px" placeholder="Producer" id="producator' + loopIndex+'fieldNum'+ next  + '" name="producator' + next + '" type="text"></div>' +
+        			'<div class="col-xs-4"><input autocomplete="off" class="input form-control" placeholder="Price (euro)" style="margin-left:10px" id="pret' + loopIndex+'fieldNum'+ next  + '" name="pret' + next + '" type="text"></div></div>';
         var newInput = $(newIn);
-        var removeBtn = '<button id="remove' + (next - 1) + '" class="btn btn-danger remove-me" style="margin-bottom:10px;margin-top:5px">Sterge oferta de mai sus</button>';
+        var removeBtn = '<button id="remove' + loopIndex+'fieldNum'+(next - 1) + '" class="btn btn-danger remove-me" style="margin-bottom:10px;margin-top:5px">Delete the above offer!</button>';
         var removeButton = $(removeBtn);
         $(addto).after(newInput);
         $(addRemove).after(removeButton);
 //        $("#field" + next).attr('data-source',$(addto).attr('data-source'));
         $("#count").val(next);  
         
-            $('.remove-me').click(function(e){
+            $('#remove'+loopIndex+'fieldNum'+(next-1)).click(function(e){
                 e.preventDefault();
                 var fieldNum = this.id.charAt(this.id.length-1);
-                var pretID = "#pret" + fieldNum;
+                var pretID = "#pret" + loopIndex+'fieldNum'+ next;
                 $(this).remove();
                 $(pretID).remove();
                 
-                var producatorID = "#producator" + fieldNum;
+                var producatorID = "#producator" + loopIndex+'fieldNum'+ next;
                 $(this).remove();
                 $(producatorID).remove();
                 
-                var numepiesaID = "#numepiesa" + fieldNum;
+                var numepiesaID = "#numepiesa" + loopIndex+'fieldNum'+ next;
                 $(this).remove();
                 $(numepiesaID).remove();
             });
-    });
+    }
     
 
-    
-});
+
+
+(function() {
+	'use strict';
+	window.addEventListener('load', function() {
+	// Fetch all the forms we want to apply custom Bootstrap validation styles to
+	var forms = document.getElementsByClassName('needs-validation');
+	// Loop over them and prevent submission
+	var validation = Array.prototype.filter.call(forms, function(form) {
+	form.addEventListener('submit', function(event) {
+	if (form.checkValidity() === false) {
+	event.preventDefault();
+	event.stopPropagation();
+	}
+	form.classList.add('was-validated');
+	}, false);
+	});
+	}, false);
+	})();

@@ -11,10 +11,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "Messages")
@@ -30,12 +31,13 @@ public class MessageEntity {
 	CarEntity masina;
 	
 	@OneToMany(mappedBy="mesaj")
-	List<OfertaEntity> oferte;
+	List<OfferEntity> oferte;
 	
 	@Column(name="Description")
 	String descriere;
 	
-	@Column(name="Conversation")
+	@Column(name="Conversation", length = 65535, columnDefinition="TEXT")
+	@Type(type="text")
 	String conversatie;
 	
 	@Column(name="Sent")
@@ -63,7 +65,7 @@ public class MessageEntity {
 	public MessageEntity() {
 		
 	}
-	public MessageEntity(CarEntity data, User sender, User receiver, List<OfertaEntity> oferte, String descriere,
+	public MessageEntity(CarEntity data, User sender, User receiver, List<OfferEntity> oferte, String descriere,
 						boolean sent, boolean received) {
 		super();
 		this.masina = data;
@@ -126,10 +128,10 @@ public class MessageEntity {
 	public void setReceiver(User receiver) {
 		this.receiver = receiver;
 	}
-	public List<OfertaEntity> getOferte() {
+	public List<OfferEntity> getOferte() {
 		return oferte;
 	}
-	public void setOferte(List<OfertaEntity> oferte) {
+	public void setOferte(List<OfferEntity> oferte) {
 		this.oferte = oferte;
 	}
 	public String getDescriere() {

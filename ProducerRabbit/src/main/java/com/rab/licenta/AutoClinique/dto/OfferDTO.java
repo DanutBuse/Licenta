@@ -1,16 +1,16 @@
 package com.rab.licenta.AutoClinique.dto;
 
-public class OfertaDTO{
+public class OfferDTO{
 	
 	private String numePiesa;
 	private String producator;
 	private Integer pret;
 	
-	public OfertaDTO() {
+	public OfferDTO() {
 		
 	}
 	
-	public OfertaDTO(String numePiesa, String producator, Integer pret) {
+	public OfferDTO(String numePiesa, String producator, Integer pret) {
 		super();
 		this.numePiesa = numePiesa;
 		this.producator = producator;

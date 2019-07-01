@@ -6,7 +6,7 @@ import java.util.Date;
 public class DateParsers {
 
 	public static String formatDate(Date date) {
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return format.format(date);
 	}
 	

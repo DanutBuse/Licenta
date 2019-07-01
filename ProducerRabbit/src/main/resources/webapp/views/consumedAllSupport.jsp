@@ -34,6 +34,31 @@
 								
 							});
 		</script> 
+		
+		<script>
+	function validate(index) {
+		var descriereAditionala = document.forms["RegForm" + index]["descriereAditionala" + index];
+
+		if (descriereAditionala.value == "") {
+			if (document.getElementById("descriereAditionalaErMsg" + index) != null) {
+				document.getElementById("descriereAditionalaErMsg" + index).remove();
+			}
+
+			descriereAditionala.className = "form-control is-invalid";
+			$('[name="descriereAditionala' + index + '"]').before(
+							"<small id='descriereAditionalaErMsg"+index+"'>Empty Message field</small>");
+			descriereAditionala.focus();
+			return false;
+
+		} else {
+			descriereAditionala.className = "form-control is-valid";
+			descriereAditionala.focus();
+		}
+
+		e.preventDefault();
+		return true;
+	}
+</script>
 </head>
 <body>
 	<div class="container">
@@ -62,13 +87,13 @@
 		<table class ="table table-bordered" id="tabel">
 			<thead class="thead-dark">
 				<tr>
-					<th onclick="sortTable(0)">Numar Tichet</th>
+					<th onclick="sortTable(0)">Ticket Number</th>
 					<th onclick="sortTable(1)">From</th>
-					<th onclick="sortTable(2)">Marca</th>
-					<th onclick="sortTable(3)">Tip</th>
+					<th onclick="sortTable(2)">Brand</th>
+					<th onclick="sortTable(3)">Type</th>
 					<th onclick="sortTable(4)">Vin</th>
-					<th onclick="sortTable(5)">An</th>
-					<th onclick="sortTable(7)">Descriere</th>
+					<th onclick="sortTable(5)">Fabrication Year</th>
+					<th onclick="sortTable(7)">Description</th>
 					<th onclick="sortTable(8)">Received Date</th>
 					<th>Info</th>
 					<th>Delete</th>
@@ -96,18 +121,18 @@
 							    <div class="modal-content">
 							      <div class="modal-header">
 							        <button type="button" class="close" data-dismiss="modal">&times;</button>
-							        <h4 class="modal-title">Informatii mesaj</h4>
+							        <h4 class="modal-title">Ticket info</h4>
 							      </div>
 							      <div class="modal-body">
 							      	<c:if test="${not empty message.oferte}">
-							      		<label for="tabel2">Oferte deja trimise</label>
+							      		<label for="tabel2">Already sent offers:</label>
 								       	<table class ="table table-striped table-bordered" id="tabel2">
 											<thead class="thead-dark">
 												<tr>
-													<th onclick="sortTable(0)">Cod</th>
-													<th onclick="sortTable(1)">Producator</th>
-													<th onclick="sortTable(2)">Nume Piesa</th>
-													<th onclick="sortTable(3)">Pret</th>
+													<th onclick="sortTable(0)">Part Number</th>
+													<th onclick="sortTable(1)">Producer</th>
+													<th onclick="sortTable(2)">Part Name</th>
+													<th onclick="sortTable(3)">Price (euro)</th>
 												</tr>
 											</thead>
 											
@@ -124,31 +149,33 @@
 										</table>	
 							    	</c:if>
 							    	<c:if test="${not empty message.conversatie}">
-								    	<label for="DescriereInitiala">Conversatie Curenta</label>
+								    	<label for="DescriereInitiala">Conversation</label>
 								    	<textarea readonly name='descriereInitiala' rows = "8" cols="1000" style="resize:none;margin-left:8px" class="form-control">${message.conversatie}</textarea>
 							    	</c:if>
-							      	<form method = "POST" action = "/AutoClinique/sendReplyFromSupport">
+							      	<form method = "POST" action = "/AutoClinique/sendReplyFromSupport" name="RegForm${loop.index}"
+													onsubmit="return validate('${loop.index}');">
 							    	  
-								      <label for="Descriere">Trimite raspuns</label>
-									  <textarea rows = "2" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriereAditionala"></textarea>
+								      <label for="Descriere">Send message</label>
+									  <textarea rows = "2" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Description" name="descriereAditionala"></textarea>
 								      
-								      <button id="b1" class="btn btn-success add-more" style="margin-bottom:10px;margin-top:10px" type="button">Mai adauga o oferta!</button>
-								      <div class="row" id="multifield1">
+								      <button id="addMore${loop.index}" class="btn btn-success add-more" style="margin-bottom:10px;margin-top:10px" type="button"
+								      				onclick="addMoreOffers('${loop.index}');">Add one more offer!</button>
+								      <div class="row" id="multifield${loop.index}fieldNum0">
 											<input type="hidden" name="count" value="1" />
 								      	
 								      		<div class="column">
-								      			<h4>Nume piesa</h4>
-									    		<input autocomplete="off" class="input form-control" id="numepiesa1" name="numepiesa1" type="text" placeholder="Nume Piesa" data-items="8" style="margin-left:3px"/>
+								      			<h4>Part Name</h4>
+									    		<input autocomplete="off" class="input form-control" id="numepiesa${loopIndex}fieldNum0"+ name="numepiesa0" type="text" placeholder="Part Name" data-items="8" style="margin-left:3px"/>
 									    	</div>
 									    
 									    	<div class="column">
-									    		<h4>Producator</h4>
-									    		<input autocomplete="off" class="input form-control" id="producator1" name="producator1" style="margin-left:5px" type="text" placeholder="Producator" data-items="8"/>
+									    		<h4>Producer</h4>
+									    		<input autocomplete="off" class="input form-control" id="producator${loopIndex}fieldNum0" name="producator0" style="margin-left:5px" type="text" placeholder="Producer" data-items="8"/>
 									    	</div>
 									    
 									    	<div class="col-xs-4">
-									    		<h4>Pret</h4>
-									    		<input autocomplete="off" class="input form-control" id="pret1" name="pret1" type="text" style="margin-left:10px" placeholder="Pret" data-items="8"/>
+									    		<h4>Price (euro)</h4>
+									    		<input autocomplete="off" class="input form-control" id="pret${loopIndex}fieldNum0" name="pret0" type="text" style="margin-left:10px" placeholder="Price" data-items="8"/>
 									    	</div>                
 								                 
 									  </div>

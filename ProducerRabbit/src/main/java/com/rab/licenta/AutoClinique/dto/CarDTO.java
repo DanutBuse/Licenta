@@ -2,13 +2,13 @@ package com.rab.licenta.AutoClinique.dto;
 
 public class CarDTO{
 
-	String marca;
+	private String marca;
 	
-	String tip;
+	private String tip;
 	
-	String vin;
+	private String vin;
 	
-	int an;
+	private int an;
 
 	public CarDTO() {
 		

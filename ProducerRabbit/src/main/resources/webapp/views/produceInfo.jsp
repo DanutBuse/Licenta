@@ -12,6 +12,103 @@
     <style>
         <%@include file="styles/styles.css" %>
     </style>
+    
+    <script> 
+function validate()                                    
+{ 
+    var marca = document.forms["RegForm"]["marca"];      
+    var tip = document.forms["RegForm"]["tip"];
+    var an = document.forms["RegForm"]["an"];      
+    var descriere = document.forms["RegForm"]["descriere"];
+    var vin = document.forms["RegForm"]["vin"];
+    
+    if (marca.value == "")                                  
+    { 
+    	if (document.getElementById("marcaErMsg") !=null) {
+    		document.getElementById("marcaErMsg").remove();
+    	}
+    	
+    	marca.className = "form-control is-invalid";
+        $('[name="marca"]').before("<small id='marcaErMsg'>Empty Brand field</small>");
+        marca.focus(); 
+        return false; 
+        
+    } else{ 
+    	marca.className = "form-control is-valid";
+    	marca.focus();  
+    } 
+    
+   
+   
+    if (tip.value == "")                                  
+    { 
+    	if (document.getElementById("tipErMsg") !=null) {
+    		document.getElementById("tipErMsg").remove();
+    	}
+    	
+    	tip.className = "form-control is-invalid";
+        $('[name="tip"]').before("<small id='tipErMsg'>Empty Type field</small>");
+        tip.focus(); 
+        return false; 
+        
+    } else{ 
+    	tip.className = "form-control is-valid";
+    	tip.focus();  
+    } 
+   
+    if (vin.value == "")                                  
+    { 
+    	if (document.getElementById("vinErMsg") !=null) {
+    		document.getElementById("vinErMsg").remove();
+    	}
+    	
+    	vin.className = "form-control is-invalid";
+        $('[name="vin"]').before("<small id='vinErMsg'>Empty Brand field</small>");
+        vin.focus(); 
+        return false; 
+        
+    } else{ 
+    	vin.className = "form-control is-valid";
+    	vin.focus();  
+    } 
+   
+    
+    if (an.value < 1980)                                  
+    { 
+    	if (document.getElementById("anErMsg") !=null) {
+    		document.getElementById("anErMsg").remove();
+    	}
+    	
+    	an.className = "form-control is-invalid";
+        $('[name="an"]').before("<small id='anErMsg'>Empty Fabrication Year field</small>");
+        an.focus(); 
+        return false; 
+        
+    } else{ 
+    	an.className = "form-control is-valid";
+    	an.focus();  
+    } 
+    
+    if (descriere.value == "")                                  
+    { 
+    	if (document.getElementById("descriereErMsg") !=null) {
+    		document.getElementById("descriereErMsg").remove();
+    	}
+    	
+    	descriere.className = "form-control is-invalid";
+        $('[name="descriere"]').before("<small id='descriereErMsg'>Empty Description field</small>");
+        descriere.focus(); 
+        return false; 
+        
+    } else{ 
+    	descriere.className = "form-control is-valid";
+    	descriere.focus();  
+    } 
+    
+    e.preventDefault();
+    return true; 
+}</script> 
+    
 </head>
 <body>
 	<div class="container">
@@ -34,7 +131,7 @@
 		
 		<div class="center-text">
 		<h3>Complete to send message</h3>
-    <form method = "POST" action = "/AutoClinique/sendMessageCustomer">
+    <form method = "POST" action = "/AutoClinique/sendMessageCustomer" name = "RegForm" onsubmit="return validate()">
     	
     	<div class="col-lg-4 col-lg-offset-4">
 	       <div class="form-group">
@@ -59,7 +156,7 @@
 	   	   
 		   <div class="form-group">
 				<label for="Descriere">Description</label>
-				<textarea rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Descriere" name="descriere"></textarea>
+				<textarea rows = "5" cols="1000" style="resize:none;margin-left:8px" class="form-control" placeholder="Description" name="descriere"></textarea>
 		   </div>
 	   	   
 		    <!--  To:<input id = "receiver" name = "receiver" type = "text" value = ""/></br> -->

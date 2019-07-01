@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Oferte")
-public class OfertaEntity{
+public class OfferEntity{
 
 	@Id
 	@Column(name="Id")
@@ -31,11 +31,11 @@ public class OfertaEntity{
 	@JoinColumn(name="mesaj")
 	MessageEntity mesaj;
 	
-	public OfertaEntity() {
+	public OfferEntity() {
 		
 	}
 	
-	public OfertaEntity(String numePiesa, String producator, Integer pret, MessageEntity mesaj) {
+	public OfferEntity(String numePiesa, String producator, Integer pret, MessageEntity mesaj) {
 		super();
 		this.numePiesa = numePiesa;
 		this.producator = producator;

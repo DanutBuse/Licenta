@@ -10,8 +10,58 @@
 <style>
 
 <%@include file="styles/styles.css" %>
-
-</style>        
+ 
+</style>   
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js">
+        </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.5/validator.min.js">
+        </script>
+<script type="text/javascript">
+	<%@include file="js/jsCode.js" %>
+</script>    
+	<script> 
+function validate()                                    
+{ 
+    var name = document.forms["RegForm"]["username"];      
+    var password = document.forms["RegForm"]["pass"];
+    
+    if (name.value == "")                                  
+    { 
+    	if (document.getElementById("userNamee") !=null) {
+    		document.getElementById("userNamee").remove();
+    	}
+    	
+        name.className = "form-control is-invalid";
+        $('[name="username"]').before("<small id='userNamee'>Empty Username field</small>");
+        name.focus(); 
+        return false; 
+        
+    } else{ 
+        name.className = "form-control is-valid";
+        name.focus();  
+    } 
+   
+    if (password.value.length < 6)                                  
+    { 
+    	if (document.getElementById("passs") !=null) {
+    		document.getElementById("passs").remove();
+    	}
+    	
+    	password.className = "form-control is-invalid";
+        $('[name="pass"]').before("<small id='passs'>Password less than 6 characters</small>");
+        password.focus(); 
+        return false; 
+        
+    } else{ 
+    	password.className = "form-control is-valid";
+    	password.focus();  
+    }
+    
+    e.preventDefault();
+    return true; 
+}</script> 
+	  
 </head>
 <body>
 	<div class="container">
@@ -21,11 +71,6 @@
 			    <div class="navbar-header">  
 			      <a class="navbar-brand" href="/AutoClinique/">About us</a>  
 			    </div>  
-			    <ul class="nav navbar-nav">  
-			      <li><a href="/AutoClinique/menu">Create Message</a></li>  
-			      <li><a href="/AutoClinique/consumeAll">Received Messages</a></li>  
-			      <li><a href="/AutoClinique/sentMessages">Sent Messages</a></li>      
-			    </ul>  
 				<ul class="nav navbar-nav navbar-right">
 			      <li><a href="/AutoClinique/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
 			      <li id='1' class="active"><a href="/AutoClinique/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
@@ -36,7 +81,7 @@
 		<div class="center-text">
 		<h3>Complete fields to login</h3>
 		
-			<form method = "POST" action = "/AutoClinique/login">
+			<form method = "POST" action = "/AutoClinique/login" onsubmit="return validate()" name="RegForm">
 			
 				 <div class="form-group">
 					<label for="Username">Username</label>
@@ -53,5 +98,6 @@
 		  
 		</div>  
 	</div>
+	
 </body>
 </html>
