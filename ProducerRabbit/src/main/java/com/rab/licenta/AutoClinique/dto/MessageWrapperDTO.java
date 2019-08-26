@@ -1,11 +1,12 @@
 package com.rab.licenta.AutoClinique.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageWrapperDTO{
+public class MessageWrapperDTO implements Serializable{
 	
-	private ArrayList<OfferDTO> listaOferte;
+	private List<OfferDTO> listaOferte;
 	private String idMesaj;
 	private String idCar;
 	private CarDTO car;
@@ -13,10 +14,10 @@ public class MessageWrapperDTO{
 	private String senderName;
 	private String conversatie;
 	
-	public MessageWrapperDTO(ArrayList<OfferDTO> listaOferte, String idMesaj,CarDTO car,
+	public MessageWrapperDTO(List<OfferDTO> list, String idMesaj,CarDTO car,
 							String idCar, String descriereCurenta, String senderName, String conversatie) {
 		super();
-		this.listaOferte = listaOferte;
+		this.listaOferte = list;
 		this.idMesaj = idMesaj;
 		this.idCar = idCar;
 		this.car = car;

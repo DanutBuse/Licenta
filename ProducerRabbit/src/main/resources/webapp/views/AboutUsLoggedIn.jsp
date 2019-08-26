@@ -30,7 +30,7 @@
 			    <ul class="nav navbar-nav">  
 			      <li ><a href="/AutoClinique/menu">Create Message</a></li>  
 			      <li><a href="/AutoClinique/consumeAll">Received Messages</a></li>  
-			      <li class="active"><a href="/AutoClinique/sentMessages">Sent Messages</a></li>      
+			      <li><a href="/AutoClinique/sentMessages">Sent Messages</a></li>      
 			    </ul>  
 				<ul class="nav navbar-nav navbar-right">
 			      <li id='2'><a href="/AutoClinique/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
@@ -38,42 +38,12 @@
 			 
 		</nav>
 		
-		<h3>Sent Messages</h3>
-		<c:if test="${empty messages}">
-			    	<h2>No messages that were sent werent received</h2>
-		</c:if>
-	
-		<c:if test="${not empty messages}">
-		<table class ="table table-striped table-bordered" id="tabel1">
-			<thead class="thead-dark">
-				<tr>
-					<th onclick="sortTable(0)">Ticket Number</th>
-					<th onclick="sortTable(1)">To</th>
-					<th onclick="sortTable(2)">Brand</th>
-					<th onclick="sortTable(3)">Type</th>
-					<th onclick="sortTable(4)">Vin</th>
-					<th onclick="sortTable(5)">Fabrication Year</th>
-					<th onclick="sortTable(6)">Description</th>
-					<th onclick="sortTable(7)">Sent Date</th>
-				</tr>	
-			</thead>		
-		    <tbody class="table-hover">
-			    <c:forEach var="message" items="${messages}" varStatus="counter">
-					<tr>
-						<td>${message.id}</td>
-						<td>${message.receiver.username}</td>
-						<td>${message.masina.marca}</td>
-						<td>${message.masina.tip}</td>
-						<td>${message.masina.vin}</td>
-						<td>${message.masina.an}</td>
-						<td>${message.descriere}</td>	
-						<td>${message.sentDate}
-						
-					</tr>
-				</c:forEach>
-			</tbody>
-		</table>
-		</c:if>
+		<div class="center-text">
+			<h3>Application Info</h3><br><br>
+			<div style="margin-left:20;"> Project done by Danut Buse in 2019 for more info about the app contact me on busedanut@yahoo.com<br><br><br><br>
+			<a href="https://github.com/DanutBuse/Licenta">Github project link</a>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

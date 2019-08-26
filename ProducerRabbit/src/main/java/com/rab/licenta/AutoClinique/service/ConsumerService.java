@@ -31,7 +31,7 @@ public class ConsumerService {
 
 	public ConsumerService() {
 
-	}
+	} 
 
 	public boolean isQueueEmpty(String queueName) {
 
@@ -143,7 +143,7 @@ public class ConsumerService {
 		return messages;
 	}
 
-	private GetResponse fillListItem(List<MessageEntity> messages, User receiver, 
+	public GetResponse fillListItem(List<MessageEntity> messages, User receiver, 
 						GetResponse response, MessageEntity currentMessage,Channel channel, String queueName) throws IOException {
 		
 		if(receiver.getTipUtilizator().equals(WebConstants.CUSTOMER))

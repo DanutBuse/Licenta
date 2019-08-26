@@ -108,7 +108,7 @@ include
 		<nav class="navbar navbar-light bg-primary">
 
 			<div class="navbar-header">
-				<a class="navbar-brand" href="/AutoClinique/">About us</a>
+				<a class="navbar-brand" href="/AutoClinique/aboutUs">About us</a>
 			</div>
 			<ul class="nav navbar-nav">
 				<li class="active"><a href="/AutoClinique/menu">Create

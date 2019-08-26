@@ -11,13 +11,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.rab.licenta.AutoClinique.config.EmailCfg;
 import com.rab.licenta.AutoClinique.constants.CookieConstants;
+import com.rab.licenta.AutoClinique.constants.WebConstants;
 import com.rab.licenta.AutoClinique.dto.OfferDTO;
 import com.rab.licenta.AutoClinique.entity.CarEntity;
 import com.rab.licenta.AutoClinique.entity.MessageEntity;
@@ -43,10 +47,24 @@ public class WebController {
 	@Autowired
 	CookieService cookieService;
 	
+	@Autowired
+	EmailCfg emailCfg;
 	
-	@RequestMapping(value = "/")
+	
+	@RequestMapping(value = "/",method = RequestMethod.GET)
 	public ModelAndView init() {
 		return new ModelAndView("registerUser");
+	}
+	
+	@RequestMapping(value = "/aboutUs",method = RequestMethod.GET)
+	public ModelAndView aboutUs(HttpServletRequest request) {
+		
+		String loggedIn = cookieService.getCookieValue(request,CookieConstants.LOGGED_IN_KEY);
+		
+		if(loggedIn.equals(CookieConstants.LOGGED_IN_VALUE_GOOD))
+				return new ModelAndView("AboutUsLoggedIn");
+			else
+				return new ModelAndView("AboutUs");
 	}
 	
 	@RequestMapping(value = "/register" ,method = RequestMethod.GET)
@@ -56,11 +74,10 @@ public class WebController {
 	
 	@RequestMapping(value = "/register",method = RequestMethod.POST)
 	public ModelAndView registerUserPost(@RequestParam("username") String userName,
-									@RequestParam("pass") String pass,
-									@RequestParam("typeName") String type)	{
+									@RequestParam("pass") String pass)	{
 		
 		if(!dbService.check(userName)) {
-			dbService.insertUser(userName,pass,type,null,null);
+			dbService.insertUser(userName,pass,WebConstants.CUSTOMER,null,null);
 			
 		}
 		else
@@ -88,8 +105,8 @@ public class WebController {
 			cookieService.setCookie(response, CookieConstants.USERNAME_KEY, userName);
 			
 			
-			dbService.setUserQueueExchange(user);
 			
+			dbService.setUserQueueExchange(user);
 			ConsumerService.declareQueue(user.getQueue().getQueueName(),
 					user.getExchange().getExchangeName(),
 					user.getExchange().getRoutingKey());
@@ -146,6 +163,25 @@ public class WebController {
 	
 	}
 	
+	@RequestMapping(value = "/sendEmail",method = RequestMethod.POST)
+	public ModelAndView sendEmail(HttpServletRequest request, @RequestParam("email") String email) {
+		
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		mailSender.setHost(emailCfg.getHost());
+		mailSender.setPort(emailCfg.getPort());
+		mailSender.setUsername(emailCfg.getUsername());
+		mailSender.setPassword(emailCfg.getPassword());
+		
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setFrom(email);
+		mailMessage.setTo("busedanut@yahoo.com");
+		mailMessage.setSubject("Support credentials");
+		mailMessage.setText("Need support credentials for: " + email);
+		
+		mailSender.send(mailMessage);
+		
+		return new ModelAndView("login");
+	}
 
 	@RequestMapping(value = "/sendMessageCustomer", method = RequestMethod.POST)
 	public String sendMsgCustomer(@RequestParam("marca") String marca,
@@ -162,7 +198,7 @@ public class WebController {
 		
 		User sender = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		
-		List<String> queues = dbService.getSuportsQueues();// verificare existenta coada
+		List<String> queues = dbService.getSuportsQueues();
 		String lowestMessagesQueue = ProducerService.getLowestNumberMessagesQueue(queues);
 		
 		User receiver = dbService.getUserByQueueName(lowestMessagesQueue);
@@ -178,6 +214,8 @@ public class WebController {
 		
 		return "redirect:sentMessages";
 	}
+	
+	
 	
 	@RequestMapping(value = "/sendMessageSupport", method = RequestMethod.POST)
 	public String sendMsgSupport(@RequestParam Map<String, String> parameters,
@@ -207,7 +245,7 @@ public class WebController {
 			if(parameters.get("numepiesa" + i).isEmpty() || parameters.get("pret" + i).isEmpty()
 					|| parameters.get("producator" + i).isEmpty()) {
 				
-				continue;
+				continue; 
 				
 			}else {
 				oferta.setNumePiesa(parameters.get("numepiesa" + i));
@@ -404,7 +442,7 @@ public class WebController {
 		String comanda = "";
 		for(Entry ent : pieseComandate.entrySet()) {
 			if(ent.getValue().equals("on")) {
-				comanda = comanda + "\n\t\t\t**Ordered** Part Number:" + ent.getKey().toString().replace("comandat", "") + "\n";
+				comanda = comanda + "\n\t\t\t\t\t**Ordered** Part Number:" + ent.getKey().toString().replace("comandat", "") + "\n";
 			}
 			else
 				continue;
@@ -416,21 +454,24 @@ public class WebController {
 		mes.setSent(true);
 		mes.setReceived(false);
 		
+		User customer = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
 		User support = mes.getSender();
 		String raspuns = "Sent Date: " + DateParsers.formatDate(new Date()) 
-									+"    From:" + support.getUsername()
+									+"    From:" + customer.getUsername()
+									+"    Message:" + parameters.get("descriereAditionala") + "\n";
+		
+		
+		raspuns = raspuns +  "Sent Date: " + DateParsers.formatDate(new Date()) 
+									+"    From:" + customer.getUsername()
 									+"    Message:" + comanda;
 		
-	    raspuns = raspuns + "Sent Date: " + DateParsers.formatDate(new Date()) 
-						+"    From:" + support.getUsername()
-						+"    Message:" + parameters.get("descriereAditionala") + "\n";
 		
 		mes.setSender(mes.getReceiver());
 		mes.setReceiver(support);
 		
 		dbService.insertMessage(mes);
 		
-		User customer = dbService.getUserByName(cookieService.getCookieValue(request,CookieConstants.USERNAME_KEY));
+		
 		String descriere = dbService.getMessageById(Integer.parseInt(mesajId)).getDescriere();
 		String conversatie = dbService.getMessageById(Integer.parseInt(mesajId)).getConversatie()+raspuns;
 		

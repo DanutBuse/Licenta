@@ -18,7 +18,6 @@ function validate()
 { 
     var name = document.forms["RegForm"]["username"];      
     var password = document.forms["RegForm"]["pass"];
-    
     if (name.value == "")                                  
     { 
     	if (document.getElementById("userNamee") !=null) {
@@ -26,7 +25,6 @@ function validate()
     	}
     	
         name.className = "form-control is-invalid";
-        $('[name="username"]').before("<small id='userNamee'>Empty Username field</small>");
         name.focus(); 
         return false; 
         
@@ -53,6 +51,28 @@ function validate()
     
     e.preventDefault();
     return true; 
+}
+    function validateSuport()                                    
+    { 
+        var email = document.forms["RegFormSuport"]["email"];
+        
+        if (email.value == "")                                  
+        { 
+        	if (document.getElementById("emaile") !=null) {
+        		document.getElementById("emaile").remove();
+        	}
+        	
+        	email.className = "form-control is-invalid";
+            email.focus(); 
+            return false; 
+            
+        } else{ 
+        	email.className = "form-control is-valid";
+        	email.focus();  
+        } 
+       
+        e.preventDefault();
+        return true; 
 }</script> 
 
 </head>
@@ -62,7 +82,7 @@ function validate()
 		<nav class="navbar navbar-light bg-primary">  
 			 
 			    <div class="navbar-header">  
-			      <a class="navbar-brand" href="/AutoClinique/">About us</a>  
+			      <a class="navbar-brand" href="/AutoClinique/aboutUs">About us</a>  
 			    </div>  
 			  
 				<ul class="nav navbar-nav navbar-right">
@@ -72,7 +92,7 @@ function validate()
 			 
 		</nav>
 		<div class="center-text">
-		<h3>Complete fields to register</h3>
+		<h3>Complete fields to register as client</h3>
 		<form method = "POST" action = "/AutoClinique/register" name = "RegForm" onsubmit="return validate()">
 		
 			 <div class="form-group">
@@ -85,15 +105,19 @@ function validate()
 				<input type="password" class="form-control" id="InputPassword" placeholder="Password" name="pass">
 			 </div>
 			 
-			 <div class="form-check">
-		        <input type="radio" name="typeName" id="customer"  class="form-check-input" value="customer" checked="checked"/>
-		     	<label class="form-check-label" for="customer">Customer</label>
-		     	
-		       	<input  type="radio" name="typeName"  id="support" value="support" class="form-check-input"/>	
-		       	<label class="form-check-label" for="support">Support</label>
-		     </div>	
+			 <input type = "submit" class="btn btn-primary" value = "Register Customer"/><br><br>
+		   
+	    </form> 
+	    <br> <br> <br> <br> 
+	    <h3>Complete email address for Support credentials</h3>
+	    <form method = "POST" action = "/AutoClinique/sendEmail" name = "RegFormSuport" onsubmit="return validateSuport()">
+		
+			 <div class="form-group">
+				<label for="email">Your Email</label>
+				<input type = "text" class="form-control" id="exampleInputEmail2" placeholder="Enter email" name="email">
+			 </div>
 			 
-			 <input type = "submit" class="btn btn-primary" value = "Register"/><br>
+			 <input type = "submit" class="btn btn-primary" value = "Send Mail for support credentials"/><br>
 		   
 	    </form>  
 	    </div>

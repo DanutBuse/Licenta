@@ -70,8 +70,15 @@ public class DbService {
 	public void setUserQueueExchange(User u) {
 		ExchangeEntity exchangeEntity = new ExchangeEntity("from"+u.getUsername(),"jsa.rountingkey"+u.getUsername());
 		QueueEntity queueEntity = new QueueEntity("to"+u.getUsername());
-		u.setExchange(exchangeEntity);
-		u.setQueue(queueEntity);
+		
+		if(exchangeRepo.getByName(exchangeEntity.getExchangeName()) != null && queueRepo.getByName(queueEntity.getQueueName()) != null) {
+			u.setExchange(exchangeRepo.getByName(exchangeEntity.getExchangeName()));
+			u.setQueue(queueRepo.getByName(queueEntity.getQueueName()));
+		}
+		else {
+			u.setExchange(exchangeEntity);
+			u.setQueue(queueEntity);
+		}
 		userRepo.save(u);
 	}
 	

@@ -28,7 +28,7 @@ public class DeleteController {
 	@Autowired
 	CookieService cookieService;
 	
-	@RequestMapping(value = "/sent/message/{id}/",method = RequestMethod.GET)
+	@RequestMapping(value = "/sent/message/{id}/",method = RequestMethod.DELETE)
 	public ModelAndView deleteSentMessage(HttpServletRequest request, HttpServletResponse response,
 										 @PathVariable("id") String id) {
 		

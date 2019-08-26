@@ -69,7 +69,7 @@ function validate()
 		<nav class="navbar navbar-light bg-primary">  
 			 
 			    <div class="navbar-header">  
-			      <a class="navbar-brand" href="/AutoClinique/">About us</a>  
+			      <a class="navbar-brand" href="/AutoClinique/aboutUs">About us</a>  
 			    </div>  
 				<ul class="nav navbar-nav navbar-right">
 			      <li><a href="/AutoClinique/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>

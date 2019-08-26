@@ -41,7 +41,7 @@ public class ProducerService {
 		
 		MessageProperties prop = new MessageProperties();
 		prop.setHeader("sender", sender);
-		prop.setHeader("sentDate", format.format(new Date()));
+		prop.setHeader("sentDate", format.format(new Date())); 
 		
 		Message message = new Message(msg.getBytes(Charset.forName("UTF-8")),prop);
 		
@@ -49,7 +49,7 @@ public class ProducerService {
 		
 		System.out.println("Send msg = " + msg);
 		
-	}
+	} 
 
 	public String getLowestNumberMessagesQueue(List<String> queues) {
 		
